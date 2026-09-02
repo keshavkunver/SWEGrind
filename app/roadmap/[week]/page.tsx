@@ -113,6 +113,7 @@ function AddTaskForm({
       {withDayPicker && (
         <select
           name="day"
+          aria-label="Day"
           className="rounded border border-zinc-300 bg-white px-2 py-1"
           defaultValue="1"
         >
@@ -125,12 +126,14 @@ function AddTaskForm({
       )}
       <input
         name="title"
+        aria-label="Task title"
         placeholder="Add a task…"
         required
         className="min-w-40 flex-1 rounded border border-zinc-300 px-2 py-1"
       />
       <select
         name="category"
+        aria-label="Category"
         className="rounded border border-zinc-300 bg-white px-2 py-1"
         defaultValue="Engineering"
       >

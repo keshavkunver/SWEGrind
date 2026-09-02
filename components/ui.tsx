@@ -17,7 +17,7 @@ export function ProgressBar({
   return (
     <div className={`h-2 w-full rounded-full bg-zinc-200 ${className}`}>
       <div
-        className="h-2 rounded-full bg-zinc-900 transition-all"
+        className="h-2 rounded-full bg-zinc-900 transition-[width] motion-reduce:transition-none"
         style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
       />
     </div>
@@ -55,7 +55,7 @@ export function StatusCycler({
       <button
         type="submit"
         title="Click to cycle status"
-        className={`rounded-full border px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-colors hover:opacity-75 ${
+        className={`rounded-full border px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-colors hover:opacity-75 focus-visible:ring-2 focus-visible:ring-zinc-500 ${
           STATUS_STYLES[status] ?? STATUS_STYLES.not_started
         }`}
       >

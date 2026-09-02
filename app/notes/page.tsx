@@ -42,6 +42,7 @@ export default async function NotesPage({
         <input
           type="search"
           name="q"
+          aria-label="Search notes"
           defaultValue={q}
           placeholder="Search notes…"
           className="w-full max-w-sm rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm"
@@ -59,12 +60,14 @@ export default async function NotesPage({
         <form action={createNote} className="grid gap-2 text-sm">
           <input
             name="title"
+            aria-label="Note title"
             placeholder="Title"
             required
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <textarea
             name="body"
+            aria-label="Note body (Markdown)"
             rows={4}
             placeholder="Write in Markdown…"
             className="rounded border border-zinc-300 px-2 py-1 font-mono text-xs"
@@ -109,7 +112,7 @@ export default async function NotesPage({
                   </span>
                 )}
                 {n.body && (
-                  <p className="mt-1 line-clamp-2 text-sm text-zinc-500">
+                  <p className="mt-1 line-clamp-2 wrap-break-word text-sm text-zinc-500">
                     {n.body}
                   </p>
                 )}

@@ -3,6 +3,7 @@ import { createResource, deleteResource } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
 import { RESOURCE_TYPES } from "@/lib/constants";
 import { Card, PageHeader } from "@/components/ui";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export default async function ResourcesPage({
   searchParams,
@@ -40,6 +41,7 @@ export default async function ResourcesPage({
         <input
           type="search"
           name="q"
+          aria-label="Filter resources"
           defaultValue={q}
           placeholder="Filter by title or topic…"
           className="w-full max-w-sm rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm"
@@ -57,18 +59,23 @@ export default async function ResourcesPage({
         <form action={createResource} className="grid gap-2 text-sm sm:grid-cols-2">
           <input
             name="title"
+            aria-label="Resource title"
             placeholder="Title"
             required
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <input
             name="url"
+            type="url"
+            aria-label="Resource URL"
+            spellCheck={false}
             placeholder="https://…"
             required
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <select
             name="type"
+            aria-label="Resource type"
             defaultValue="docs"
             className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
           >
@@ -80,11 +87,13 @@ export default async function ResourcesPage({
           </select>
           <input
             name="topic"
+            aria-label="Topic"
             placeholder="Topic (e.g. React, System Design)"
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <input
             name="description"
+            aria-label="Short description"
             placeholder="Short description"
             className="rounded border border-zinc-300 px-2 py-1 sm:col-span-2"
           />
@@ -126,13 +135,14 @@ export default async function ResourcesPage({
                     )}
                   </div>
                   <form action={deleteResource.bind(null, r.id)}>
-                    <button
-                      type="submit"
-                      className="text-xs text-zinc-300 hover:text-red-500"
-                      title="Delete"
+                    <ConfirmButton
+                      action={deleteResource.bind(null, r.id)}
+                      message={`Delete resource "${r.title}"?`}
+                      aria-label={`Delete ${r.title}`}
+                      className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
                     >
                       ✕
-                    </button>
+                    </ConfirmButton>
                   </form>
                 </Card>
               ))}

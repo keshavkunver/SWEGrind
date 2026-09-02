@@ -33,6 +33,7 @@ export default function LoginPage() {
               type="email"
               required
               autoComplete="email"
+              spellCheck={false}
               className="rounded border border-zinc-300 px-2 py-1.5"
             />
           </label>
@@ -47,16 +48,18 @@ export default function LoginPage() {
               className="rounded border border-zinc-300 px-2 py-1.5"
             />
           </label>
-          {error && (
-            <p className="rounded bg-red-50 px-2 py-1 text-sm text-red-600">
-              {error}
-            </p>
-          )}
-          {message && (
-            <p className="rounded bg-emerald-50 px-2 py-1 text-sm text-emerald-700">
-              {message}
-            </p>
-          )}
+          <div aria-live="polite">
+            {error && (
+              <p className="rounded bg-red-50 px-2 py-1 text-sm text-red-600">
+                {error}
+              </p>
+            )}
+            {message && (
+              <p className="rounded bg-emerald-50 px-2 py-1 text-sm text-emerald-700">
+                {message}
+              </p>
+            )}
+          </div>
           <div className="mt-1 flex gap-2">
             <button
               formAction={signInAction}

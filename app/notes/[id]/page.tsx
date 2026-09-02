@@ -5,6 +5,7 @@ import { deleteNote, updateNote } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
 import { BackLink, Card, PageHeader } from "@/components/ui";
 import { NoteLinkFields } from "@/components/NoteLinkFields";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export default async function NotePage({
   params,
@@ -30,11 +31,13 @@ export default async function NotePage({
           <form action={updateNote.bind(null, note.id)} className="grid gap-2 text-sm">
             <input
               name="title"
+              aria-label="Note title"
               defaultValue={note.title}
               className="rounded border border-zinc-300 px-2 py-1"
             />
             <textarea
               name="body"
+              aria-label="Note body (Markdown)"
               defaultValue={note.body}
               rows={16}
               className="rounded border border-zinc-300 px-2 py-1 font-mono text-xs"
@@ -56,12 +59,13 @@ export default async function NotePage({
               >
                 Save
               </button>
-              <button
-                formAction={deleteNote.bind(null, note.id)}
+              <ConfirmButton
+                action={deleteNote.bind(null, note.id)}
+                message={`Delete note "${note.title}"?`}
                 className="rounded border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
               >
                 Delete
-              </button>
+              </ConfirmButton>
             </div>
           </form>
         </Card>

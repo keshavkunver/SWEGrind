@@ -14,6 +14,7 @@ import {
 } from "@/lib/constants";
 import { fmtDate } from "@/lib/progress";
 import { ConfidenceBadge, StatusCycler } from "@/components/ui";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 const DIFFICULTY_STYLES: Record<string, string> = {
   easy: "text-emerald-600",
@@ -88,7 +89,9 @@ export function ProblemRow({ problem }: { problem: Problem }) {
               </span>
               <input
                 name="url"
+                type="url"
                 defaultValue={problem.url}
+                spellCheck={false}
                 className="rounded border border-zinc-300 px-2 py-1"
               />
             </label>
@@ -224,12 +227,13 @@ export function ProblemRow({ problem }: { problem: Problem }) {
             >
               Save
             </button>
-            <button
-              formAction={deleteProblem.bind(null, problem.id)}
+            <ConfirmButton
+              action={deleteProblem.bind(null, problem.id)}
+              message={`Delete problem "${problem.name}"?`}
               className="rounded border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
             >
               Delete
-            </button>
+            </ConfirmButton>
           </div>
         </form>
       </details>

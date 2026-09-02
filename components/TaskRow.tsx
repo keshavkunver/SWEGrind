@@ -8,6 +8,7 @@ import { CATEGORIES, CATEGORY_LABELS } from "@/lib/constants";
 import { linksToTextarea } from "@/lib/links";
 import { fmtDate } from "@/lib/progress";
 import { CategoryBadge, LinkChips, StatusCycler } from "@/components/ui";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export function TaskRow({ task }: { task: Task }) {
   return (
@@ -157,12 +158,13 @@ export function TaskRow({ task }: { task: Task }) {
             >
               Save
             </button>
-            <button
-              formAction={deleteTask.bind(null, task.id)}
+            <ConfirmButton
+              action={deleteTask.bind(null, task.id)}
+              message={`Delete task "${task.title}"?`}
               className="rounded border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
             >
               Delete
-            </button>
+            </ConfirmButton>
           </div>
         </form>
       </details>

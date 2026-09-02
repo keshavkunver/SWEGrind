@@ -10,6 +10,7 @@ import { STATUSES, STATUS_LABELS } from "@/lib/constants";
 import { linksToTextarea } from "@/lib/links";
 import { pct } from "@/lib/progress";
 import { Card, LinkChips, PageHeader, ProgressBar, StatusBadge } from "@/components/ui";
+import { ConfirmButton } from "@/components/ConfirmButton";
 
 export default async function ProjectPage() {
   const user = await requireUser();
@@ -74,13 +75,14 @@ export default async function ProjectPage() {
                       {t.title}
                     </span>
                     <form action={deleteMilestoneTask.bind(null, t.id)}>
-                      <button
-                        type="submit"
-                        className="text-xs text-zinc-300 hover:text-red-500"
-                        title="Delete"
+                      <ConfirmButton
+                        action={deleteMilestoneTask.bind(null, t.id)}
+                        message={`Delete "${t.title}"?`}
+                        aria-label={`Delete ${t.title}`}
+                        className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
                       >
                         ✕
-                      </button>
+                      </ConfirmButton>
                     </form>
                   </li>
                 ))}
@@ -93,6 +95,7 @@ export default async function ProjectPage() {
             >
               <input
                 name="title"
+                aria-label={`Add implementation task to ${m.name}`}
                 placeholder="Add implementation task…"
                 required
                 className="flex-1 rounded border border-zinc-300 px-2 py-1"

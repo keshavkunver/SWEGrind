@@ -140,17 +140,22 @@ export default async function PatternPage({
         >
           <input
             name="name"
+            aria-label="Problem name"
             placeholder="Problem name"
             required
             className="min-w-40 flex-1 rounded border border-zinc-300 px-2 py-1"
           />
           <input
             name="url"
+            type="url"
+            aria-label="Problem URL"
+            spellCheck={false}
             placeholder="https://leetcode.com/problems/…"
             className="min-w-40 flex-1 rounded border border-zinc-300 px-2 py-1"
           />
           <select
             name="kind"
+            aria-label="Problem type"
             defaultValue="independent"
             className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
           >
@@ -162,6 +167,7 @@ export default async function PatternPage({
           </select>
           <select
             name="difficulty"
+            aria-label="Difficulty"
             defaultValue="medium"
             className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
           >
