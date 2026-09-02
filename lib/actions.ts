@@ -6,7 +6,9 @@ import { db } from "./db";
 import { requireUser } from "./auth";
 import { textareaToLinksJson } from "./links";
 
-// A small personal tool: after any mutation, refresh everything.
+// Learner-model actions. The curriculum itself (weeks, tasks, patterns,
+// problems, topics, links) is read-only content; these actions only touch
+// the learner's own work: statuses, confidence, notes, project tracking.
 // Every action resolves the signed-in user and scopes reads/writes by
 // userId, so one user can never touch another's rows.
 function refresh() {
@@ -24,12 +26,14 @@ function str(fd: FormData, key: string): string {
   return typeof v === "string" ? v : "";
 }
 
-function dateOrNull(fd: FormData, key: string): Date | null {
-  const v = str(fd, key);
-  return v ? new Date(`${v}T00:00:00`) : null;
+function daysFromNow(days: number): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
-// ---- Roadmap tasks ----
+// ---- Roadmap tasks: complete them, write notes ----
 
 export async function cycleTaskStatus(id: string) {
   const user = await requireUser();
@@ -43,118 +47,26 @@ export async function cycleTaskStatus(id: string) {
   refresh();
 }
 
-export async function updateTask(id: string, fd: FormData) {
+export async function updateTaskNotes(id: string, fd: FormData) {
   const user = await requireUser();
   await db.task.updateMany({
     where: { id, userId: user.id },
-    data: {
-      title: str(fd, "title") || "Untitled task",
-      description: str(fd, "description"),
-      category: str(fd, "category") || "Engineering",
-      estMinutes: str(fd, "estMinutes") ? parseInt(str(fd, "estMinutes"), 10) : null,
-      links: textareaToLinksJson(str(fd, "links")),
-      notes: str(fd, "notes"),
-      practice: str(fd, "practice"),
-      recall: str(fd, "recall"),
-      nextReviewAt: dateOrNull(fd, "nextReviewAt"),
-    },
+    data: { notes: str(fd, "notes") },
   });
-  refresh();
-}
-
-export async function addTask(week: number, day: number, fd: FormData) {
-  const user = await requireUser();
-  const last = await db.task.findFirst({
-    where: { userId: user.id, week, day },
-    orderBy: { order: "desc" },
-  });
-  await db.task.create({
-    data: {
-      userId: user.id,
-      week,
-      day,
-      order: (last?.order ?? 0) + 1,
-      title: str(fd, "title") || "Untitled task",
-      category: str(fd, "category") || "Engineering",
-    },
-  });
-  refresh();
-}
-
-// Persists a drag-and-drop reorder: ids arrive in their new display order.
-export async function reorderTasks(ids: string[]) {
-  const user = await requireUser();
-  await db.$transaction(
-    ids.map((id, i) =>
-      db.task.updateMany({
-        where: { id, userId: user.id },
-        data: { order: i },
-      })
-    )
-  );
-  refresh();
-}
-
-export async function deleteTask(id: string) {
-  const user = await requireUser();
-  await db.task.deleteMany({ where: { id, userId: user.id } });
   refresh();
 }
 
 // ---- Interview patterns & problems ----
 
-export async function updatePattern(id: string, fd: FormData) {
+// Confidence is a self-assessment; notes are the learner's own study notes.
+// Pattern status is derived from problem completion, not stored here.
+export async function updatePatternStudy(id: string, fd: FormData) {
   const user = await requireUser();
   await db.pattern.updateMany({
     where: { id, userId: user.id },
     data: {
       notes: str(fd, "notes"),
-      signals: str(fd, "signals"),
-      status: str(fd, "status") || "not_started",
       confidence: str(fd, "confidence") || "unknown",
-    },
-  });
-  refresh();
-}
-
-export async function addProblem(patternId: string, fd: FormData) {
-  const user = await requireUser();
-  const name = str(fd, "name");
-  if (!name) return;
-  // Ensure the pattern belongs to this user before attaching a problem.
-  await db.pattern.findFirstOrThrow({
-    where: { id: patternId, userId: user.id },
-  });
-  await db.problem.create({
-    data: {
-      userId: user.id,
-      patternId,
-      name,
-      url: str(fd, "url"),
-      kind: str(fd, "kind") || "independent",
-      difficulty: str(fd, "difficulty") || "medium",
-    },
-  });
-  refresh();
-}
-
-export async function updateProblem(id: string, fd: FormData) {
-  const user = await requireUser();
-  await db.problem.updateMany({
-    where: { id, userId: user.id },
-    data: {
-      name: str(fd, "name") || "Untitled problem",
-      url: str(fd, "url"),
-      kind: str(fd, "kind") || "independent",
-      difficulty: str(fd, "difficulty") || "medium",
-      status: str(fd, "status") || "not_started",
-      confidence: str(fd, "confidence") || "unknown",
-      timeComplexity: str(fd, "timeComplexity"),
-      spaceComplexity: str(fd, "spaceComplexity"),
-      notes: str(fd, "notes"),
-      firstAttempt: dateOrNull(fd, "firstAttempt"),
-      lastReviewed: dateOrNull(fd, "lastReviewed"),
-      nextReviewAt: dateOrNull(fd, "nextReviewAt"),
     },
   });
   refresh();
@@ -166,6 +78,7 @@ export async function cycleProblemStatus(id: string) {
     where: { id, userId: user.id },
   });
   const status = NEXT_STATUS[p.status] ?? "not_started";
+  const completing = status === "complete";
   await db.problem.update({
     where: { id },
     data: {
@@ -173,36 +86,66 @@ export async function cycleProblemStatus(id: string) {
       // Stamp firstAttempt the first time work starts on a problem.
       firstAttempt:
         p.firstAttempt ?? (status !== "not_started" ? new Date() : null),
+      // Completing a problem schedules its first spaced review
+      // automatically; un-completing takes it back out of the queue.
+      ...(completing
+        ? {
+            lastReviewed: new Date(),
+            nextReviewAt: daysFromNow(3),
+            reviewInterval: 3,
+          }
+        : { nextReviewAt: null, reviewInterval: 0 }),
     },
   });
   refresh();
 }
 
-export async function deleteProblem(id: string) {
+// The learner's own work on a problem: how confident they are, their
+// complexity analysis, and their solution notes.
+export async function updateProblemWork(id: string, fd: FormData) {
   const user = await requireUser();
-  await db.problem.deleteMany({ where: { id, userId: user.id } });
+  await db.problem.updateMany({
+    where: { id, userId: user.id },
+    data: {
+      confidence: str(fd, "confidence") || "unknown",
+      timeComplexity: str(fd, "timeComplexity"),
+      spaceComplexity: str(fd, "spaceComplexity"),
+      notes: str(fd, "notes"),
+    },
+  });
   refresh();
 }
 
-// ---- System design topics ----
+// ---- System design topics: study them, write notes ----
 
-export async function updateSdTopic(id: string, fd: FormData) {
+export async function cycleSdTopicStatus(id: string) {
+  const user = await requireUser();
+  const t = await db.sdTopic.findFirstOrThrow({
+    where: { id, userId: user.id },
+  });
+  const status = NEXT_STATUS[t.status] ?? "not_started";
+  await db.sdTopic.update({
+    where: { id },
+    data: {
+      status,
+      ...(status === "complete"
+        ? { nextReviewAt: daysFromNow(7), reviewInterval: 7 }
+        : { nextReviewAt: null, reviewInterval: 0 }),
+    },
+  });
+  refresh();
+}
+
+export async function updateSdTopicNotes(id: string, fd: FormData) {
   const user = await requireUser();
   await db.sdTopic.updateMany({
     where: { id, userId: user.id },
-    data: {
-      status: str(fd, "status") || "not_started",
-      notes: str(fd, "notes"),
-      links: textareaToLinksJson(str(fd, "links")),
-      practice: str(fd, "practice"),
-      recall: str(fd, "recall"),
-      nextReviewAt: dateOrNull(fd, "nextReviewAt"),
-    },
+    data: { notes: str(fd, "notes") },
   });
   refresh();
 }
 
-// ---- Project milestones ----
+// ---- Project milestones: the learner's own build work ----
 
 export async function updateMilestone(id: string, fd: FormData) {
   const user = await requireUser();
@@ -288,11 +231,7 @@ export async function reviewItem(
         : (await db.sdTopic.findFirstOrThrow({ where })).reviewInterval;
 
   const days = nextIntervalDays(current, rating);
-  const nextReviewAt = new Date(now);
-  nextReviewAt.setDate(nextReviewAt.getDate() + days);
-  nextReviewAt.setHours(0, 0, 0, 0);
-
-  const data = { reviewInterval: days, nextReviewAt };
+  const data = { reviewInterval: days, nextReviewAt: daysFromNow(days) };
   if (kind === "task") {
     await db.task.update({ where: { id }, data });
   } else if (kind === "problem") {
@@ -352,7 +291,7 @@ export async function deleteNote(id: string) {
   redirect("/notes");
 }
 
-// ---- Resources ----
+// ---- Resources: personal library additions ----
 
 export async function createResource(fd: FormData) {
   const user = await requireUser();
@@ -374,6 +313,9 @@ export async function createResource(fd: FormData) {
 
 export async function deleteResource(id: string) {
   const user = await requireUser();
-  await db.resource.deleteMany({ where: { id, userId: user.id } });
+  // Seeded curriculum resources are read-only content: never deletable.
+  await db.resource.deleteMany({
+    where: { id, userId: user.id, seeded: false },
+  });
   refresh();
 }

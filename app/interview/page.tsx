@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { pct, countComplete } from "@/lib/progress";
+import { pct, countComplete, derivedStatus } from "@/lib/progress";
 import { Card, ConfidenceBadge, PageHeader, ProgressBar, StatusBadge } from "@/components/ui";
 
 export default async function InterviewPage() {
@@ -24,7 +24,7 @@ export default async function InterviewPage() {
             <Card className="h-full transition-shadow hover:shadow-md">
               <div className="flex items-start justify-between gap-2">
                 <h2 className="font-semibold">{p.name}</h2>
-                <StatusBadge status={p.status} />
+                <StatusBadge status={derivedStatus(p.problems)} />
               </div>
               <div className="mt-2">
                 <ConfidenceBadge confidence={p.confidence} />

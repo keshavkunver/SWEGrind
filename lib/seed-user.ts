@@ -3,8 +3,10 @@ import {
   MILESTONES,
   PATTERNS,
   PATTERN_PROBLEMS,
+  PATTERN_SIGNALS,
   RESOURCES,
   SD_TOPICS,
+  SD_TOPIC_CONTENT,
   WEEK_TASKS,
   slugify,
 } from "./curriculum";
@@ -19,6 +21,7 @@ export async function seedUser(userId: string) {
       name,
       slug: slugify(name),
       order: i,
+      signals: PATTERN_SIGNALS[name] ?? "",
     })),
     skipDuplicates: true,
   });
@@ -31,6 +34,9 @@ export async function seedUser(userId: string) {
       name,
       slug: slugify(name),
       order: i,
+      links: JSON.stringify(SD_TOPIC_CONTENT[name]?.links ?? []),
+      practice: SD_TOPIC_CONTENT[name]?.practice ?? "",
+      recall: SD_TOPIC_CONTENT[name]?.recall ?? "",
     })),
     skipDuplicates: true,
   });
@@ -53,6 +59,7 @@ export async function seedUser(userId: string) {
       type,
       topic,
       description,
+      seeded: true,
     })),
   });
 
@@ -95,13 +102,40 @@ async function seedProblems(userId: string) {
   await db.problem.createMany({ data });
 }
 
+// Fills curriculum content added after an account was created. Only ever
+// writes fields that are still empty, so user data is never overwritten.
+async function backfillContent(userId: string) {
+  for (const [name, signals] of Object.entries(PATTERN_SIGNALS)) {
+    await db.pattern.updateMany({
+      where: { userId, slug: slugify(name), signals: "" },
+      data: { signals },
+    });
+  }
+  // Resources created before the seeded flag existed: mark curriculum ones.
+  await db.resource.updateMany({
+    where: { userId, seeded: false, title: { in: RESOURCES.map(([t]) => t) } },
+    data: { seeded: true },
+  });
+  for (const [name, content] of Object.entries(SD_TOPIC_CONTENT)) {
+    await db.sdTopic.updateMany({
+      where: { userId, slug: slugify(name), links: "[]", practice: "" },
+      data: {
+        links: JSON.stringify(content.links),
+        practice: content.practice,
+        recall: content.recall,
+      },
+    });
+  }
+}
+
 export async function ensureSeeded(userId: string) {
   const patternCount = await db.pattern.count({ where: { userId } });
   if (patternCount === 0) {
     await seedUser(userId);
     return;
   }
-  // Backfill: account predates the curated problem lists.
+  // Account predates parts of the curriculum: fill in what's missing.
   const problemCount = await db.problem.count({ where: { userId } });
   if (problemCount === 0) await seedProblems(userId);
+  await backfillContent(userId);
 }

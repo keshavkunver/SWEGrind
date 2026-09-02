@@ -16,7 +16,7 @@ export default async function RoadmapPage() {
     <div>
       <PageHeader
         title="Roadmap"
-        subtitle="The 8-week plan. Open a week to see and edit its daily tasks."
+        subtitle="The 8-week plan. Open a week to see each day's lessons and track your progress."
       />
       <div className="grid gap-3 sm:grid-cols-2">
         {Array.from({ length: TOTAL_WEEKS }, (_, i) => i + 1).map((week) => {

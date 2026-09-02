@@ -134,16 +134,18 @@ export default async function ResourcesPage({
                       </p>
                     )}
                   </div>
-                  <form action={deleteResource.bind(null, r.id)}>
-                    <ConfirmButton
-                      action={deleteResource.bind(null, r.id)}
-                      message={`Delete resource "${r.title}"?`}
-                      aria-label={`Delete ${r.title}`}
-                      className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
-                    >
-                      ✕
-                    </ConfirmButton>
-                  </form>
+                  {!r.seeded && (
+                    <form action={deleteResource.bind(null, r.id)}>
+                      <ConfirmButton
+                        action={deleteResource.bind(null, r.id)}
+                        message={`Delete resource "${r.title}"?`}
+                        aria-label={`Delete ${r.title}`}
+                        className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                      >
+                        ✕
+                      </ConfirmButton>
+                    </form>
+                  )}
                 </Card>
               ))}
           </div>

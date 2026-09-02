@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { cycleTaskStatus } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
 import { ensureSeeded } from "@/lib/seed-user";
-import { endOfToday, pct } from "@/lib/progress";
+import { countComplete, endOfToday, pct } from "@/lib/progress";
 import { ReviewButtons } from "@/components/ReviewButtons";
 import { currentPosition } from "@/lib/weeks";
 import {
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
     {
       label: "Life Companion",
       value: pct(milestones),
-      detail: `${milestones.length} milestones`,
+      detail: `${countComplete(milestones)} of ${milestones.length} milestones done`,
       href: "/project",
     },
     {
@@ -176,7 +176,10 @@ export default async function DashboardPage() {
             </span>
           </h2>
           {dueCount === 0 && (
-            <p className="text-sm text-zinc-400">Nothing due. Set review dates on tasks, problems, or topics.</p>
+            <p className="text-sm text-zinc-400">
+              Nothing due yet. Completing problems and topics schedules
+              reviews here automatically.
+            </p>
           )}
           <div className="grid gap-1.5 text-sm">
             {dueProblems.map((p) => (

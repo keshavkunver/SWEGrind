@@ -69,6 +69,118 @@ export const RESOURCES: [string, string, string, string, string][] = [
   ["Stanford CS329A", "https://cs329a.stanford.edu/", "course", "AI Engineering", "Self-improving AI agents course"],
 ];
 
+// Recognition signals per pattern: curriculum content shown read-only on
+// the pattern page ("when to reach for this").
+export const PATTERN_SIGNALS: Record<string, string> = {
+  "Arrays & Hashing":
+    "Need O(1) lookup, counting, or de-duplication. \"Find pairs that sum to…\", frequency counts, grouping items by a computed key, checking existence fast.",
+  "Two Pointers":
+    "Sorted input, or comparing elements from both ends. \"Pair with target sum in sorted array\", palindromes, in-place partitioning, converging from both sides.",
+  "Sliding Window":
+    "Contiguous subarray/substring with a constraint. \"Longest/shortest window such that…\", running sums or counts over a moving range, at-most-K distinct.",
+  Stack:
+    "Nested structure or most-recent-first matching. Balanced brackets, undo behavior, \"next greater element\", monotonic sequences, expression evaluation.",
+  "Binary Search":
+    "Sorted data, or a monotonic yes/no condition over a numeric range. \"Minimum value that satisfies…\", search in rotated array, guess-and-check on the answer.",
+  "Linked Lists":
+    "Pointer manipulation without random access. Reversal, cycle detection (fast/slow pointers), merging sorted lists, kth from end.",
+  Trees:
+    "Hierarchical data; problems phrased per-subtree. Depth/height, path sums, ancestors, BST ordering invariants, recursion that combines child results.",
+  "BFS / DFS":
+    "Grids and reachability. \"Number of islands/regions\", shortest path in unweighted graph (BFS), flood fill, level-by-level processing.",
+  Heaps:
+    "Repeatedly need the min/max of a changing set. \"Kth largest\", top-K frequent, merge K streams, running median (two heaps).",
+  Graphs:
+    "Explicit nodes and edges, dependencies, or prerequisites. Topological order, connected components, union-find for cycle detection.",
+  Backtracking:
+    "Enumerate all combinations/permutations/paths under constraints. \"All subsets…\", board placement, prune-and-explore recursion.",
+  "Dynamic Programming":
+    "Optimal value or count of ways with overlapping subproblems. \"Max/min cost to reach…\", \"how many ways…\", choices at each step that depend on earlier results.",
+};
+
+// System design topic content: links, practice prompts, and recall
+// questions, shown read-only on the topic page.
+export const SD_TOPIC_CONTENT: Record<
+  string,
+  { links: { label: string; url: string }[]; practice: string; recall: string }
+> = {
+  "Requirements gathering": {
+    links: [{ label: "Hello Interview: Delivery framework", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery" }],
+    practice: "Take any app you use daily and write its functional and non-functional requirements in 5 minutes.",
+    recall: "What is the difference between functional and non-functional requirements?\nName four common non-functional requirements and how you would quantify each.",
+  },
+  "API design": {
+    links: [{ label: "Hello Interview: API design", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/core-concepts" }],
+    practice: "Design the REST API for a URL shortener: endpoints, methods, request/response bodies, status codes.",
+    recall: "When would you choose POST vs PUT vs PATCH?\nWhat belongs in the path vs query string vs body?\nHow do you version an API without breaking clients?",
+  },
+  "HTTP / networking": {
+    links: [{ label: "MDN: HTTP overview", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" }],
+    practice: "Trace what happens end to end when you type a URL and press Enter: DNS, TCP, TLS, HTTP, render.",
+    recall: "What is the difference between HTTP/1.1, HTTP/2, and HTTP/3?\nWhat does a TLS handshake establish?\nWhat are common status code classes and examples of each?",
+  },
+  "Data modeling": {
+    links: [{ label: "PostgreSQL tutorial", url: "https://www.postgresql.org/docs/current/tutorial.html" }],
+    practice: "Model the schema for a Twitter clone: users, tweets, follows, likes. Identify keys, indexes, and the hardest query.",
+    recall: "How do you model many-to-many relationships?\nWhat is normalization, and when do you deliberately denormalize?",
+  },
+  "SQL vs NoSQL": {
+    links: [{ label: "Hello Interview: Database choices", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/key-technologies" }],
+    practice: "For each: chat messages, product catalog, bank ledger, session store — pick a database type and defend it.",
+    recall: "What guarantees do ACID transactions give?\nWhen does a document store beat a relational database, and vice versa?",
+  },
+  Indexes: {
+    links: [{ label: "Use the Index, Luke", url: "https://use-the-index-luke.com/" }],
+    practice: "Given a slow query with WHERE user_id = ? AND created_at > ? ORDER BY created_at, design the right index and explain why.",
+    recall: "How does a B-tree index work at a high level?\nWhy not index every column?\nWhat is a covering index?",
+  },
+  Caching: {
+    links: [{ label: "Hello Interview: Caching", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/key-technologies" }],
+    practice: "Add caching to a product page serving 10k rps: what do you cache, where, with what TTL and invalidation strategy?",
+    recall: "Compare cache-aside, write-through, and write-behind.\nWhat is cache stampede and two ways to prevent it?\nWhy is invalidation hard?",
+  },
+  "Load balancing": {
+    links: [{ label: "Cloudflare: What is load balancing?", url: "https://www.cloudflare.com/learning/performance/what-is-load-balancing/" }],
+    practice: "Sketch L4 vs L7 load balancing for a web app with websockets. Where does TLS terminate?",
+    recall: "Name three load-balancing algorithms and when each fits.\nHow do health checks and connection draining work?",
+  },
+  "Queues / workers": {
+    links: [{ label: "AWS: What is a message queue?", url: "https://aws.amazon.com/message-queue/" }],
+    practice: "Design image-upload processing (resize, scan, thumbnail) with a queue: what is the message, retry policy, and failure path?",
+    recall: "At-least-once vs at-most-once vs exactly-once: what does each require?\nWhat is a dead-letter queue?\nWhy must consumers be idempotent?",
+  },
+  "Object storage": {
+    links: [{ label: "AWS S3 documentation", url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html" }],
+    practice: "Design file uploads for a web app using presigned URLs: draw the request flow and explain why uploads skip your server.",
+    recall: "Why store files in object storage instead of the database?\nWhat is a presigned URL and what does it protect?",
+  },
+  "Rate limiting": {
+    links: [{ label: "Hello Interview: Rate limiting", url: "https://www.hellointerview.com/learn/system-design/problem-breakdowns/rate-limiter" }],
+    practice: "Design a rate limiter for a public API: algorithm, storage, response headers, and behavior across multiple servers.",
+    recall: "Compare token bucket and sliding window.\nWhere should limits be enforced, and keyed by what?\nWhat should a 429 response include?",
+  },
+  Replication: {
+    links: [{ label: "PostgreSQL: Replication", url: "https://www.postgresql.org/docs/current/high-availability.html" }],
+    practice: "Add read replicas to a saturated primary: which queries move, and what breaks when replication lags?",
+    recall: "Sync vs async replication tradeoffs?\nWhat is read-your-own-writes consistency and how do you get it with replicas?",
+  },
+  Partitioning: {
+    links: [{ label: "Hello Interview: Sharding", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/core-concepts" }],
+    practice: "Shard a users table at 10x growth: pick a shard key, explain resharding, and identify queries that get harder.",
+    recall: "Range vs hash partitioning tradeoffs?\nWhat makes a good shard key?\nWhat is a hot partition?",
+  },
+  Reliability: {
+    links: [{ label: "Google SRE book (free)", url: "https://sre.google/sre-book/table-of-contents/" }],
+    practice: "Your checkout service calls a flaky payment API. Add timeouts, retries with backoff, and a circuit breaker; explain each choice.",
+    recall: "Why do retries need jitter and budgets?\nWhat is a circuit breaker and its three states?\nDefine SLI, SLO, SLA.",
+  },
+  Observability: {
+    links: [{ label: "Grafana: The three pillars", url: "https://grafana.com/docs/grafana/latest/fundamentals/" }],
+    practice: "Instrument a checkout flow: which metrics, logs, and traces would let you find a p99 latency regression in minutes?",
+    recall: "Logs vs metrics vs traces: what question does each answer?\nWhat are the four golden signals?\nWhy percentiles instead of averages?",
+  },
+};
+
 // Curated starter problems per pattern (NeetCode-style progressions).
 // [name, leetcode slug, difficulty, kind]
 export type SeedProblem = [

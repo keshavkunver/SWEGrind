@@ -140,13 +140,14 @@ model Note {
 }
 
 model Resource {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   userId      String
   title       String
   url         String
-  type        String @default("docs") // docs | course | video | article | tool | practice
-  topic       String @default("")
-  description String @default("")
+  type        String  @default("docs") // docs | course | video | article | tool | practice
+  topic       String  @default("")
+  description String  @default("")
+  seeded      Boolean @default(false) // curriculum resource: not deletable
 
   @@index([userId])
 }

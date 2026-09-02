@@ -10,6 +10,14 @@ export function pct(items: { status: string }[]): number {
   return Math.round((score / items.length) * 100);
 }
 
+// A pattern's status is derived from its problems, not stored.
+export function derivedStatus(items: { status: string }[]): string {
+  if (items.length === 0) return "not_started";
+  if (items.every((i) => i.status === "complete")) return "complete";
+  if (items.some((i) => i.status !== "not_started")) return "in_progress";
+  return "not_started";
+}
+
 export function countComplete(items: { status: string }[]): number {
   return items.filter((i) => i.status === "complete").length;
 }

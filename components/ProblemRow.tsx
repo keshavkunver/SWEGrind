@@ -1,20 +1,8 @@
 import type { Problem } from "@prisma/client";
-import {
-  cycleProblemStatus,
-  deleteProblem,
-  updateProblem,
-} from "@/lib/actions";
-import {
-  CONFIDENCE_LABELS,
-  CONFIDENCE_LEVELS,
-  DIFFICULTIES,
-  PROBLEM_KINDS,
-  STATUSES,
-  STATUS_LABELS,
-} from "@/lib/constants";
+import { cycleProblemStatus, updateProblemWork } from "@/lib/actions";
+import { CONFIDENCE_LABELS, CONFIDENCE_LEVELS } from "@/lib/constants";
 import { fmtDate } from "@/lib/progress";
 import { ConfidenceBadge, StatusCycler } from "@/components/ui";
-import { ConfirmButton } from "@/components/ConfirmButton";
 
 const DIFFICULTY_STYLES: Record<string, string> = {
   easy: "text-emerald-600",
@@ -22,6 +10,9 @@ const DIFFICULTY_STYLES: Record<string, string> = {
   hard: "text-red-600",
 };
 
+// A problem from the curriculum. The problem itself is read-only; the
+// learner cycles status (completion auto-schedules review) and records
+// their own confidence, complexity analysis, and notes.
 export function ProblemRow({ problem }: { problem: Problem }) {
   return (
     <div className="border-b border-zinc-100 py-2.5 last:border-b-0">
@@ -68,77 +59,13 @@ export function ProblemRow({ problem }: { problem: Problem }) {
       )}
       <details className="mt-1">
         <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
-          Edit problem
+          My solution notes
         </summary>
         <form
-          action={updateProblem.bind(null, problem.id)}
+          action={updateProblemWork.bind(null, problem.id)}
           className="mt-2 grid gap-2 rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm"
         >
-          <div className="grid gap-2 sm:grid-cols-2">
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">Name</span>
-              <input
-                name="name"
-                defaultValue={problem.name}
-                className="rounded border border-zinc-300 px-2 py-1"
-              />
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">
-                LeetCode URL
-              </span>
-              <input
-                name="url"
-                type="url"
-                defaultValue={problem.url}
-                spellCheck={false}
-                className="rounded border border-zinc-300 px-2 py-1"
-              />
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">Type</span>
-              <select
-                name="kind"
-                defaultValue={problem.kind}
-                className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
-              >
-                {PROBLEM_KINDS.map((k) => (
-                  <option key={k} value={k}>
-                    {k}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">
-                Difficulty
-              </span>
-              <select
-                name="difficulty"
-                defaultValue={problem.difficulty}
-                className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
-              >
-                {DIFFICULTIES.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">Status</span>
-              <select
-                name="status"
-                defaultValue={problem.status}
-                className="rounded border border-zinc-300 bg-white px-2 py-1"
-              >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {STATUS_LABELS[s]}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="grid gap-2 sm:grid-cols-3">
             <label className="grid gap-1">
               <span className="text-xs font-medium text-zinc-500">
                 Confidence
@@ -177,39 +104,6 @@ export function ProblemRow({ problem }: { problem: Problem }) {
                 className="rounded border border-zinc-300 px-2 py-1 font-mono"
               />
             </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">
-                First attempted
-              </span>
-              <input
-                name="firstAttempt"
-                type="date"
-                defaultValue={fmtDate(problem.firstAttempt)}
-                className="rounded border border-zinc-300 px-2 py-1"
-              />
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">
-                Last reviewed
-              </span>
-              <input
-                name="lastReviewed"
-                type="date"
-                defaultValue={fmtDate(problem.lastReviewed)}
-                className="rounded border border-zinc-300 px-2 py-1"
-              />
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-medium text-zinc-500">
-                Next review
-              </span>
-              <input
-                name="nextReviewAt"
-                type="date"
-                defaultValue={fmtDate(problem.nextReviewAt)}
-                className="rounded border border-zinc-300 px-2 py-1"
-              />
-            </label>
           </div>
           <label className="grid gap-1">
             <span className="text-xs font-medium text-zinc-500">Notes</span>
@@ -217,23 +111,24 @@ export function ProblemRow({ problem }: { problem: Problem }) {
               name="notes"
               defaultValue={problem.notes}
               rows={3}
+              placeholder="Approach, key insight, what to remember next time…"
               className="rounded border border-zinc-300 px-2 py-1"
             />
           </label>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
             <button
               type="submit"
               className="rounded bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700"
             >
               Save
             </button>
-            <ConfirmButton
-              action={deleteProblem.bind(null, problem.id)}
-              message={`Delete problem "${problem.name}"?`}
-              className="rounded border border-red-200 px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-            >
-              Delete
-            </ConfirmButton>
+            {problem.firstAttempt && (
+              <span className="text-xs text-zinc-400">
+                first attempted {fmtDate(problem.firstAttempt)}
+                {problem.lastReviewed &&
+                  ` · last reviewed ${fmtDate(problem.lastReviewed)}`}
+              </span>
+            )}
           </div>
         </form>
       </details>
