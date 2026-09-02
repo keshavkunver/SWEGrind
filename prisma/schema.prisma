@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Postgres via Supabase (local stack in dev, hosted project in prod).
+// Auth is Supabase Auth; `userId` columns hold the auth.users UUID and all
+// queries are scoped to the signed-in user in lib/actions.ts and pages.
+// Status/category/confidence values live in lib/constants.ts.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id           String    @id @default(cuid())
+  userId       String
+  week         Int
+  day          Int // 1-7 within the week
+  order        Int       @default(0)
+  title        String
+  description  String    @default("")
+  category     String // InterviewPrep | Engineering | SystemDesign | AIEngineering | Project | Career
+  estMinutes   Int? // estimated duration
+  status       String    @default("not_started") // not_started | in_progress | complete
+  links        String    @default("[]") // JSON: [{ label, url }]
+  notes        String    @default("")
+  practice     String    @default("") // optional practice items, freeform
+  recall       String    @default("") // optional recall questions, freeform
+  nextReviewAt DateTime?
+  reviewInterval Int     @default(0) // days; current spaced-repetition step
+  noteEntries  Note[]
+
+  @@index([userId, week, day])
+}
+
+model Pattern {
+  id          String    @id @default(cuid())
+  userId      String
+  slug        String
+  name        String
+  order       Int       @default(0)
+  notes       String    @default("") // explanation / notes
+  signals     String    @default("") // recognition signals
+  status      String    @default("not_started")
+  confidence  String    @default("unknown") // unknown | recognize | explain | guided | independent | interview_ready
+  problems    Problem[]
+  noteEntries Note[]
+
+  @@unique([userId, slug])
+}
+
+model Problem {
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  url           String    @default("")
+  patternId     String
+  pattern       Pattern   @relation(fields: [patternId], references: [id], onDelete: Cascade)
+  kind          String    @default("independent") // guided | independent | review
+  difficulty    String    @default("medium") // easy | medium | hard
+  status        String    @default("not_started")
+  confidence    String    @default("unknown")
+  firstAttempt  DateTime?
+  lastReviewed  DateTime?
+  timeComplexity  String  @default("")
+  spaceComplexity String  @default("")
+  notes         String    @default("")
+  nextReviewAt  DateTime?
+  reviewInterval Int      @default(0) // days; current spaced-repetition step
+  noteEntries   Note[]
+
+  @@index([patternId])
+  @@index([userId])
+}
+
+model SdTopic {
+  id           String    @id @default(cuid())
+  userId       String
+  slug         String
+  name         String
+  order        Int       @default(0)
+  status       String    @default("not_started")
+  notes        String    @default("")
+  links        String    @default("[]") // JSON: [{ label, url }]
+  practice     String    @default("") // practice design questions
+  recall       String    @default("") // recall questions
+  nextReviewAt DateTime?
+  reviewInterval Int     @default(0) // days; current spaced-repetition step
+  noteEntries  Note[]
+
+  @@unique([userId, slug])
+}
+
+model Milestone {
+  id          String          @id @default(cuid())
+  userId      String
+  slug        String
+  name        String
+  order       Int             @default(0)
+  status      String          @default("not_started")
+  notes       String          @default("")
+  links       String          @default("[]") // learning resources, commits, issues
+  tasks       MilestoneTask[]
+  noteEntries Note[]
+
+  @@unique([userId, slug])
+}
+
+model MilestoneTask {
+  id          String    @id @default(cuid())
+  userId      String
+  milestoneId String
+  milestone   Milestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  title       String
+  done        Boolean   @default(false)
+  order       Int       @default(0)
+
+  @@index([milestoneId])
+}
+
+model Note {
+  id          String     @id @default(cuid())
+  userId      String
+  title       String
+  body        String     @default("") // markdown
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  taskId      String?
+  task        Task?      @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  patternId   String?
+  pattern     Pattern?   @relation(fields: [patternId], references: [id], onDelete: SetNull)
+  problemId   String?
+  problem     Problem?   @relation(fields: [problemId], references: [id], onDelete: SetNull)
+  sdTopicId   String?
+  sdTopic     SdTopic?   @relation(fields: [sdTopicId], references: [id], onDelete: SetNull)
+  milestoneId String?
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+model Resource {
+  id          String @id @default(cuid())
+  userId      String
+  title       String
+  url         String
+  type        String @default("docs") // docs | course | video | article | tool | practice
+  topic       String @default("")
+  description String @default("")
+
+  @@index([userId])
+}

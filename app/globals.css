@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+/* Minimal markdown styling for rendered notes */
+.prose-note h1 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+.prose-note h2 { font-size: 1.1rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+.prose-note h3 { font-size: 1rem; font-weight: 600; margin: 0.75rem 0 0.5rem; }
+.prose-note p { margin: 0.5rem 0; }
+.prose-note ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
+.prose-note ol { list-style: decimal; padding-left: 1.25rem; margin: 0.5rem 0; }
+.prose-note code {
+  background: #f4f4f5;
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.85em;
+}
+.prose-note pre {
+  background: #18181b;
+  color: #e4e4e7;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+.prose-note pre code { background: transparent; padding: 0; color: inherit; }
+.prose-note a { color: #1d4ed8; text-decoration: underline; }
+.prose-note blockquote {
+  border-left: 3px solid #d4d4d8;
+  padding-left: 0.75rem;
+  color: #52525b;
+  margin: 0.5rem 0;
 }

@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SWE Grind
 
-## Getting Started
+Personal learning dashboard for an 8-week software engineering plan: roadmap,
+interview prep by pattern, system design topics, the Life Companion project,
+notes, and resources. Next.js App Router + TypeScript + Tailwind + Prisma +
+Supabase (Postgres + Auth).
 
-First, run the development server:
+## Run it locally
 
 ```bash
+npm install
+npx supabase start   # local Postgres + Auth (needs Docker)
+npm run db:setup     # create tables + row level security
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000, create an account, and the full curriculum
+(8-week roadmap, 12 interview patterns with curated LeetCode problem sets,
+15 system design topics, 18 project milestones, starter resources) seeds
+itself on first sign-in.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration (.env)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env`:
 
-## Learn More
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`:
+  which Supabase project handles **auth**. Legacy
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` JWTs also work. Hosted projects require
+  email confirmation on sign-up by default.
+- `DATABASE_URL`: where Prisma stores **data**. To use the hosted project:
+  Dashboard → Connect → ORMs (Prisma), paste the pooled connection string,
+  then `npm run db:setup`.
 
-To learn more about Next.js, take a look at the following resources:
+The local Supabase stack for this repo runs on remapped ports (API 54331,
+DB 54332) so it can coexist with other local Supabase projects.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Point `DATABASE_URL` at the hosted Supabase project and run
+   `npm run db:setup` once (creates tables + RLS).
+2. Import the GitHub repo in Vercel and set three env vars:
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+   `DATABASE_URL` (the pooled string). `prisma generate` runs automatically
+   via the postinstall script.
+3. In Supabase: Authentication → URL Configuration → set the site URL to
+   the Vercel domain so confirmation emails link to the deployed app.
 
-## Deploy on Vercel
+## Features worth knowing about
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Spaced repetition:** items due for review show Again / Good / Easy on
+  the dashboard, stepping through a 1 / 3 / 7 / 14 / 30 / 60 day ladder.
+  Manual review dates still work everywhere.
+- **Drag to reorder:** grab the ⠿ handle on a roadmap task to reorder
+  within a day.
+- **Row level security:** `prisma/rls.sql` locks Supabase's REST API down
+  to owner-only rows; the app itself scopes every query by user in
+  `lib/actions.ts`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## How it's organized
+
+- `app/` — one folder per section; all server components + server actions,
+  no client-side data fetching.
+- `lib/actions.ts` — every mutation; each one resolves the signed-in user
+  and scopes writes by `userId`.
+- `lib/curriculum.ts` — the seed curriculum; `lib/seed-user.ts` applies it
+  to a new account on first dashboard load.
+- `prisma/schema.prisma` — data model; status/category/confidence values
+  are documented in `lib/constants.ts`.
+- `middleware.ts` — session refresh + login gate for every route.
