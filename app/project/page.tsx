@@ -67,6 +67,7 @@ export default async function ProjectPage() {
                             : "border-zinc-300 bg-white hover:border-zinc-500"
                         }`}
                         title={t.done ? "Mark not done" : "Mark done"}
+                        aria-label={`${t.done ? "Mark not done" : "Mark done"}: ${t.title}`}
                       >
                         {t.done ? "✓" : ""}
                       </button>

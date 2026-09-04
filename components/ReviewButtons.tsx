@@ -4,7 +4,7 @@ import { reviewItem, type ReviewKind } from "@/lib/actions";
 // the interval ladder in lib/actions.ts.
 export function ReviewButtons({ kind, id }: { kind: ReviewKind; id: string }) {
   const base =
-    "rounded border px-3 py-2 text-xs font-medium cursor-pointer md:px-1.5 md:py-0.5 md:text-[11px]";
+    "rounded border px-3 py-2 text-xs font-medium cursor-pointer focus-visible:ring-2 focus-visible:ring-zinc-500 md:px-1.5 md:py-0.5 md:text-[11px]";
   return (
     <span className="inline-flex gap-2 md:gap-1">
       <form action={reviewItem.bind(null, kind, id, "again")}>

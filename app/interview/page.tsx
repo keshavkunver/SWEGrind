@@ -38,7 +38,7 @@ export default async function InterviewPage() {
         {stats.map((s) => (
           <Card key={s.label} className="py-3">
             <p className="text-xs font-medium text-zinc-500">{s.label}</p>
-            <p className="mt-1 text-xl font-bold">{s.value}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums">{s.value}</p>
           </Card>
         ))}
       </div>
