@@ -45,6 +45,15 @@ DB 54332) so it can coexist with other local Supabase projects.
 3. In Supabase: Authentication → URL Configuration → set the site URL to
    the Vercel domain so confirmation emails link to the deployed app.
 
+## Tests
+
+`npm test` runs the vitest suite (~46 tests, <1s): spaced-repetition
+ladder and resume semantics, action write-shapes (mocked Prisma), auth
+state transitions, progress/date/link helpers, and curriculum integrity
+(content coverage, seed uniqueness for the race-safe constraints, no em
+dashes in rendered copy). The `prebuild` script runs it on every build,
+so Vercel deploys fail if the suite fails.
+
 ## Features worth knowing about
 
 - **Course model:** the curriculum is read-only content; learners only

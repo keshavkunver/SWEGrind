@@ -126,7 +126,7 @@ export const SD_TOPIC_CONTENT: Record<
   },
   "SQL vs NoSQL": {
     links: [{ label: "Hello Interview: Database choices", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/key-technologies" }],
-    practice: "For each: chat messages, product catalog, bank ledger, session store — pick a database type and defend it.",
+    practice: "For each: chat messages, product catalog, bank ledger, session store. Pick a database type and defend it.",
     recall: "What guarantees do ACID transactions give?\nWhen does a document store beat a relational database, and vice versa?",
   },
   Indexes: {

@@ -5,6 +5,16 @@ import { redirect } from "next/navigation";
 import { db } from "./db";
 import { requireUser } from "./auth";
 import { textareaToLinksJson } from "./links";
+import {
+  NEXT_STATUS,
+  daysFromNow,
+  nextIntervalDays,
+  resumeReview,
+  type ReviewKind,
+  type ReviewRating,
+} from "./srs";
+
+export type { ReviewKind, ReviewRating } from "./srs";
 
 // Learner-model actions. The curriculum itself (weeks, tasks, patterns,
 // problems, topics, links) is read-only content; these actions only touch
@@ -15,30 +25,9 @@ function refresh() {
   revalidatePath("/", "layout");
 }
 
-const NEXT_STATUS: Record<string, string> = {
-  not_started: "in_progress",
-  in_progress: "complete",
-  complete: "not_started",
-};
-
 function str(fd: FormData, key: string): string {
   const v = fd.get(key);
   return typeof v === "string" ? v : "";
-}
-
-function daysFromNow(days: number): Date {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-// Completing an item schedules its next spaced review. A previously built
-// ladder position survives an un-complete/re-complete round trip: resume at
-// the stored interval rather than resetting to the initial one.
-function resumeReview(storedInterval: number, initialDays: number) {
-  const days = storedInterval > 0 ? storedInterval : initialDays;
-  return { nextReviewAt: daysFromNow(days), reviewInterval: days };
 }
 
 // ---- Roadmap tasks: complete them, write notes ----
@@ -203,21 +192,6 @@ export async function deleteMilestoneTask(id: string) {
 }
 
 // ---- Spaced repetition ----
-
-// Interval ladder in days. "Again" restarts, "Good" moves one step past the
-// current interval, "Easy" skips a step.
-const REVIEW_LADDER = [1, 3, 7, 14, 30, 60];
-
-export type ReviewKind = "problem" | "sdTopic";
-export type ReviewRating = "again" | "good" | "easy";
-
-function nextIntervalDays(current: number, rating: ReviewRating): number {
-  if (rating === "again") return REVIEW_LADDER[0];
-  let idx = REVIEW_LADDER.findIndex((d) => d > current);
-  if (idx === -1) idx = REVIEW_LADDER.length - 1;
-  if (rating === "easy") idx += 1;
-  return REVIEW_LADDER[Math.min(idx, REVIEW_LADDER.length - 1)];
-}
 
 export async function reviewItem(
   kind: ReviewKind,
