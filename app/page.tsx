@@ -106,7 +106,7 @@ export default async function DashboardPage() {
         <ProgressBar value={overall} className="mt-2" />
       </Card>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-5">
         {tiles.map((tile) => (
           <Link key={tile.label} href={tile.href}>
             <Card className="h-full py-3 transition-shadow hover:shadow-md">

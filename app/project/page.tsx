@@ -61,7 +61,7 @@ export default async function ProjectPage() {
                     <form action={toggleMilestoneTask.bind(null, t.id)}>
                       <button
                         type="submit"
-                        className={`flex h-4 w-4 items-center justify-center rounded border text-[10px] ${
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border text-xs ${
                           t.done
                             ? "border-emerald-500 bg-emerald-500 text-white"
                             : "border-zinc-300 bg-white hover:border-zinc-500"
@@ -79,7 +79,7 @@ export default async function ProjectPage() {
                         action={deleteMilestoneTask.bind(null, t.id)}
                         message={`Delete "${t.title}"?`}
                         aria-label={`Delete ${t.title}`}
-                        className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                        className="p-1.5 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
                       >
                         ✕
                       </ConfirmButton>

@@ -1,0 +1,24 @@
+import type { MetadataRoute } from "next";
+
+// Web app manifest so the dashboard can be added to a phone home screen
+// and opened like an app.
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "SWE Grind",
+    short_name: "SWE Grind",
+    description: "8-week software engineering learning dashboard",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#fafafa",
+    theme_color: "#18181b",
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+    ],
+  };
+}

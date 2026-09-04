@@ -47,11 +47,16 @@ DB 54332) so it can coexist with other local Supabase projects.
 
 ## Features worth knowing about
 
-- **Spaced repetition:** items due for review show Again / Good / Easy on
-  the dashboard, stepping through a 1 / 3 / 7 / 14 / 30 / 60 day ladder.
-  Manual review dates still work everywhere.
-- **Drag to reorder:** grab the ⠿ handle on a roadmap task to reorder
-  within a day.
+- **Course model:** the curriculum is read-only content; learners only
+  cycle statuses, rate confidence, write notes, and track their own
+  project milestones.
+- **Spaced repetition:** completing a problem schedules review +3 days,
+  a system design topic +7. Due items show Again / Good / Easy on the
+  dashboard, stepping through a 1 / 3 / 7 / 14 / 30 / 60 day ladder.
+- **Phone-friendly:** bottom tab navigation on mobile, and a web manifest
+  so the site can be added to the home screen and opened like an app
+  (share menu → Add to Home Screen). Data lives in Supabase, so progress
+  syncs across devices automatically; sign in from any of them.
 - **Row level security:** `prisma/rls.sql` locks Supabase's REST API down
   to owner-only rows; the app itself scopes every query by user in
   `lib/actions.ts`.

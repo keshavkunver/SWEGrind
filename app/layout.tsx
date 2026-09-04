@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { createClient } from "@/lib/supabase/server";
@@ -6,6 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 export const metadata: Metadata = {
   title: "SWE Grind",
   description: "8-week software engineering learning dashboard",
+  appleWebApp: { capable: true, title: "SWE Grind", statusBarStyle: "default" },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover", // lets the bottom tab bar pad for the iOS home bar
+  themeColor: "#ffffff",
 };
 
 export default async function RootLayout({
@@ -27,7 +35,10 @@ export default async function RootLayout({
         </a>
         <div className="flex min-h-screen flex-col md:flex-row">
           <Sidebar email={user?.email} />
-          <main id="main" className="min-w-0 flex-1 p-4 md:p-8 max-w-6xl">
+          <main
+            id="main"
+            className="min-w-0 max-w-6xl flex-1 p-4 pb-24 md:p-8 md:pb-8"
+          >
             {children}
           </main>
         </div>
