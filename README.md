@@ -54,6 +54,13 @@ state transitions, progress/date/link helpers, and curriculum integrity
 dashes in rendered copy). The `prebuild` script runs it on every build,
 so Vercel deploys fail if the suite fails.
 
+`npm run test:e2e` runs the Playwright smoke suite (manual layer, not a
+deploy gate): sign-up with fresh seeding, dashboard progress, pattern
+page + review scheduling round trip, system design content, notes
+markdown/search/delete, resources add/delete, and the auth gate. Needs
+the local Supabase stack running (`npx supabase start`); the dev server
+starts automatically. Run it whenever auth, forms, or navigation change.
+
 ## Features worth knowing about
 
 - **Course model:** the curriculum is read-only content; learners only
@@ -80,4 +87,4 @@ so Vercel deploys fail if the suite fails.
   to a new account on first dashboard load.
 - `prisma/schema.prisma` — data model; status/category/confidence values
   are documented in `lib/constants.ts`.
-- `middleware.ts` — session refresh + login gate for every route.
+- `proxy.ts` — session refresh + login gate for every route.
