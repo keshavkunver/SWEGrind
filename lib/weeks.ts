@@ -1,14 +1,14 @@
 // Week themes for display. The tasks themselves live in the database;
 // this is just the label for each week card.
 export const WEEK_THEMES: Record<number, string> = {
-  1: "Foundations: hashing, two pointers, JS/TS, React, Claude Code",
-  2: "Core patterns + Next.js and LLM API fundamentals",
-  3: "Data: linked lists, trees, PostgreSQL, auth, full-stack foundation",
-  4: "Shipping: testing, CI/CD, Docker, tool calling, V1 deploy",
-  5: "Graphs, RAG, retrieval, async jobs, scaling concepts",
-  6: "Backtracking, DP, MCP, agents, reliability",
-  7: "Practice: timed interviews, evals, observability, polish",
-  8: "Mocks, deployment, portfolio, heavy applications",
+  1: "Foundations: hashing, two pointers, UMPIRE, JS/TS, React",
+  2: "React/Next + core patterns + LLM fundamentals",
+  3: "Data structures + full stack: lists, intervals, trees, Postgres",
+  4: "Heaps and graphs + production SWE: testing, CI/CD, Docker",
+  5: "Graph depth + retrieval: topo sort, union find, RAG",
+  6: "Advanced patterns + agents/MCP: trie, greedy, DP",
+  7: "DP completion + evals + timed practice",
+  8: "Interview readiness + production polish",
 };
 
 export const TOTAL_WEEKS = 8;

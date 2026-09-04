@@ -136,7 +136,7 @@ export default async function ResourcesPage({
               .map((e) => (
                 <Card
                   key={e.id ?? e.url}
-                  className="flex items-center justify-between gap-3 py-3"
+                  className="flex min-w-0 items-center justify-between gap-3 py-3"
                 >
                   <div className="min-w-0">
                     <a
@@ -162,7 +162,7 @@ export default async function ResourcesPage({
                         action={deleteResource.bind(null, e.id)}
                         message={`Delete resource "${e.title}"?`}
                         aria-label={`Delete ${e.title}`}
-                        className="p-1.5 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                        className="p-3 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500 md:p-1.5"
                       >
                         ✕
                       </ConfirmButton>

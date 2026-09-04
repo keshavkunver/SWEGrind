@@ -9,15 +9,20 @@ import { BackLink, Card, ConfidenceBadge, PageHeader, StatusBadge } from "@/comp
 import { ProblemRow } from "@/components/ProblemRow";
 
 const KIND_TITLES: Record<string, string> = {
-  guided: "Guided problems",
-  independent: "Independent problems",
-  review: "Review problems",
+  guided: "A · Guided",
+  supported: "B · Supported independent",
+  independent: "C · Independent",
+  transfer: "D · Transfer test",
 };
 
 const KIND_HINTS: Record<string, string> = {
-  guided: "Work through these with the solution or a walkthrough nearby.",
-  independent: "Solve these on your own before looking anything up.",
-  review: "Problems that came back through spaced review.",
+  guided:
+    "You know the pattern. A walkthrough is allowed; the goal is seeing how the pattern maps onto a real problem.",
+  supported:
+    "You know which pattern this practices. Derive the algorithm yourself.",
+  independent: "Tougher or less obvious. Minimal assistance.",
+  transfer:
+    "Identify how the pattern applies on your own, as in an interview. No peeking at the group label first.",
 };
 
 export default async function PatternPage({
@@ -56,21 +61,35 @@ export default async function PatternPage({
       )}
 
       {PROBLEM_KINDS.map((kind) => {
-        const problems = pattern.problems.filter((p) => p.kind === kind);
-        if (kind === "review" && problems.length === 0) return null;
+        const problems = pattern.problems.filter(
+          (p) => p.kind === kind && p.inCurriculum
+        );
+        if (problems.length === 0) return null;
         return (
           <Card key={kind} className="mb-4">
             <h2 className="font-semibold">{KIND_TITLES[kind]}</h2>
             <p className="mb-1 text-xs text-zinc-400">{KIND_HINTS[kind]}</p>
-            {problems.length === 0 && (
-              <p className="py-2 text-sm text-zinc-400">None yet.</p>
-            )}
             {problems.map((p) => (
               <ProblemRow key={p.id} problem={p} />
             ))}
           </Card>
         );
       })}
+
+      {pattern.problems.some((p) => !p.inCurriculum) && (
+        <Card className="mb-4">
+          <h2 className="font-semibold">Extra practice</h2>
+          <p className="mb-1 text-xs text-zinc-400">
+            Beyond the core curriculum. These never count toward the 88
+            unique problems.
+          </p>
+          {pattern.problems
+            .filter((p) => !p.inCurriculum)
+            .map((p) => (
+              <ProblemRow key={p.id} problem={p} />
+            ))}
+        </Card>
+      )}
 
       <Card>
         <h2 className="mb-2 font-semibold">My study notes</h2>
@@ -80,7 +99,8 @@ export default async function PatternPage({
         >
           <label className="grid gap-1 sm:max-w-xs">
             <span className="text-xs font-medium text-zinc-500">
-              How confident are you with this pattern?
+              Pattern mastery (0 to 5). Solving all four problems does not
+              equal mastery; rate honestly.
             </span>
             <select
               name="confidence"

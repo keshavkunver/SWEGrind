@@ -1,202 +1,110 @@
-# SWE Grind — Canonical 8-Week Curriculum
+# SWE Grind: Canonical 8-Week Curriculum (v2)
 
-Use this document as the **source of truth for the SWE Grind curriculum**.
+Source of truth for the curriculum DATA is `lib/curriculum.ts` (patterns,
+problems, signals, tasks, resources). This document is the source of truth
+for the curriculum DESIGN: what the numbers mean and the rules any future
+revision must keep. Updated 2026-09-04 from the v2 spec.
 
-The existing dashboard/application may already contain roadmap data. Audit the existing curriculum against this specification and update curriculum data where necessary.
+## Primary goal
 
-Do NOT redesign the application or add unrelated features.
+Become interview-ready for a materially higher-paying SWE / Full Stack /
+AI Product Engineer role as fast as possible while building practical AI
+engineering capability. Optimized for getting an offer, not completing
+courses. Success is defined by capability, not checkmarks: recognize the
+22 patterns, use UMPIRE, design systems, tell STAR + Learning stories,
+ship and defend Life Companion, keep an active application pipeline.
 
-The objective is to make sure the roadmap represented in SWE Grind accurately reflects this learning plan.
+## Three tracks, all parallel
 
----
+- **Track A, pass the interview:** patterns, UMPIRE, system design,
+  behavioral (STAR + Learning), communication.
+- **Track B, do the job:** JS/TS, React, Next.js, APIs, PostgreSQL, auth,
+  testing, Git, CI/CD, Docker (target mastery 4), Kubernetes (target 2-3,
+  concepts only), AI engineering, AI-native development.
+- **Track C, get the interview:** targeted applications from week 1
+  (5-8/week ramping to 10-15+), networking, referrals, resume, LinkedIn,
+  GitHub, mocks. Never let project-building consume interview prep, or
+  course consumption replace applications.
 
-# 1. PRIMARY OBJECTIVE
+## Interview curriculum architecture
 
-The primary goal of SWE Grind is:
+- Exactly **22 core patterns** (see `PATTERNS`). Secondary patterns
+  (cyclic sort, two heaps, k-way merge, bitwise XOR, advanced DP) must
+  never dilute the core roadmap.
+- Exactly **4 problems per pattern = 88 unique problems**, one per role:
+  - **A Guided:** pattern known, walkthrough allowed
+  - **B Supported independent:** pattern known, derive the algorithm
+  - **C Independent:** harder or less obvious, minimal assistance
+  - **D Transfer test:** identify the pattern yourself
+- **Unique problems vs practice attempts are separate metrics.** Spaced
+  re-solves add attempts (`Problem.attemptCount`) but never inflate the
+  88 count (`Problem.inCurriculum` flags the core set).
+- **Mastery is tracked separately from completion** (pattern confidence
+  ladder 0-5, interview_ready = 5). Checking off four problems does not
+  make a pattern mastered.
+- **Learn the pattern before the problems.** Grokking-style lessons are
+  the pattern teacher (selective use, never end-to-end completion);
+  NeetCode is the problem bank; Coding Interview University is a
+  supplemental reference. UMPIRE (Understand, Match, Plan, Implement,
+  Review, Evaluate) is the standard method; Python is the interview
+  language unless a target requires otherwise.
+- **Scaffolding fades by week:** patterns named in weeks 1-2, less
+  signposted in 3-4, mixed unlabeled problems in 5-6, timed unseen
+  problems with UMPIRE aloud in 7-8.
 
-**Get interview-ready for a materially higher-paying Software Engineer / Full Stack Engineer / AI Product Engineer role as quickly as possible while developing the practical AI engineering skills needed for modern AI-native companies.**
+## Pattern sequencing (recommended, not gates)
 
-Target roles include:
+| Week | Patterns |
+|---|---|
+| 1 | Hash Maps / Sets, Two Pointers, begin Sliding Window |
+| 2 | Sliding Window, Fast & Slow Pointers, Stack, Monotonic Stack, Modified Binary Search |
+| 3 | In-place Linked List Reversal, Merge Intervals, Tree DFS, Tree BFS |
+| 4 | Top-K / Heap, Graph BFS / DFS, Matrix / Islands |
+| 5 | Topological Sort, Union Find, Subsets, Backtracking |
+| 6 | Trie, Greedy, 1-D DP, begin 2-D DP |
+| 7 | Complete 2-D DP, then mixed timed practice |
+| 8 | Mocks: coding, system design, behavioral |
 
-- Software Engineer
-- Full Stack Software Engineer
-- Product Engineer
-- Frontend-leaning Full Stack Engineer
-- AI Product Engineer
-- Full Stack AI Engineer
-- Applied AI Engineer
+Weeks define sequencing, not calendar gates: **any milestone may be
+completed early and stays completed.** Statuses are freely settable on
+any week's items at any time; nothing re-locks when its scheduled week
+arrives. Completion evidence (dates, attempts, notes) is retained.
 
-Reference-job profiles include companies/roles similar to:
+## Engineering, AI, project
 
-- Sift — Full Stack / Agentic AI engineering
-- BrightHire — Full Stack AI Engineer
-- modern AI-native startups
-- established SWE employers such as Amazon
+- Flagship project: **Life Companion**, a personal AI companion that
+  turns goals, projects, tasks, and context into an approved weekly
+  plan. Not a generic chatbot. Progression V0 (fake-data UI) through V8
+  (verification, evals, observability, deployment, case study); Google
+  Calendar is the preferred first integration. V1 entities: User, Goal,
+  Project, Task, Weekly Review. Do not overbuild.
+- AI engineering progression: LLM APIs, prompting, structured outputs,
+  streaming, deterministic workflows, tool calling, embeddings/RAG,
+  context engineering, memory, MCP, constrained agents, evals,
+  verification, safety, human approval. Workflows before agents: never
+  force an agent architecture where a deterministic sequence is simpler.
+- AI-native development: Explore, Plan, Implement, Test, Review. AI
+  tutors in learning mode, accelerates in project mode, and is
+  progressively removed in interview mode.
+- System design: ~2 sessions/week early, more as interviews approach.
+  Framework: requirements, entities, API, data flow, high-level design,
+  deep dives. Hello Interview is the spine.
+- Daily budget (guideline): ~75m interview prep, ~2h engineering/project,
+  ~30m AI, 15-30m career, SD 30-45m twice weekly. Roughly 4h/day.
 
-The curriculum therefore deliberately develops TWO parallel capabilities:
+## Integrity rules (any future revision must keep these)
 
-## TRACK A — PASS THE INTERVIEW
-
-- Data structures and algorithms
-- Coding interview patterns
-- System design
-- Behavioral interviewing
-- Technical communication
-
-## TRACK B — DO THE JOB
-
-- Modern full-stack engineering
-- Production software engineering
-- AI-assisted development
-- AI product engineering
-- Deployment/reliability
-
-A third activity supports both:
-
-## TRACK C — GET THE INTERVIEW
-
-- Applications
-- networking/referrals
-- resume/GitHub/project positioning
-- mock interviews
-- company-specific preparation
-
----
-
-# 2. CORE LEARNING PHILOSOPHY
-
-SWE Grind is NOT a course-completion challenge.
-
-Every technical concept should preferably follow:
-
-**Learn → Guided Example → Independent Application → Build → Recall → Review**
-
-Avoid passive consumption.
-
-For interview algorithms:
-
-**Understand data structure → Learn pattern → Guided problems → Independent problems → Pattern recognition → Spaced repetition → Timed interview**
-
-NeetCode 150 should function primarily as the **problem bank**, not the teacher.
-
-For engineering:
-
-**Learn concept → tiny isolated exercise if necessary → implement concept in flagship project**
-
-For AI:
-
-**Learn primitive → implement it in the flagship project → observe failures → evaluate → improve**
-
----
-
-# 3. PRIORITY ORDER
-
-When deciding what deserves time:
-
-1. Interview readiness
-2. Applications / interview pipeline
-3. Core full-stack engineering
-4. Practical AI engineering
-5. System design
-6. Advanced AI theory
-
-However, system design increases in priority when interviewing for mid-level/senior roles.
-
-When an actual interview is scheduled:
-
-**Company-specific interview prep temporarily outranks the normal curriculum.**
-
----
-
-# 4. PRIMARY TECH STACK
-
-The main application stack is:
-
-## Languages
-
-Primary:
-- JavaScript
-- TypeScript
-- SQL
-
-Secondary:
-- Python
-
-Python is important for AI engineering but should NOT displace TypeScript/full-stack learning during the early weeks.
-
-## Frontend
-
-- HTML/CSS fundamentals
-- React
-- Next.js
-- TypeScript
-- responsive UI
-- forms
-- state
-- Server vs Client Components
-- data fetching
-- streaming UI
-- loading/error states
-- human-in-the-loop interfaces
-
-## Backend
-
-- HTTP
-- REST
-- APIs
-- webhooks
-- backend logic
-- validation
-- authentication
-- authorization
-- async programming
-- error handling
-- background jobs
-
-## Data
-
-- PostgreSQL
-- SQL
-- schema/data modeling
-- primary/foreign keys
-- joins
-- indexes
-- constraints
-- transactions
-- one-to-many / many-to-many
-- ORM fundamentals
-- structured vs unstructured data
-
-## Production Engineering
-
-- Git/GitHub
-- shell/CLI
-- debugging
-- environment variables
-- testing
-- linting/formatting
-- CI/CD
-- Docker
-- Docker Compose
-- logging
-- observability
-- deployment
-- basic cloud architecture
-
-## Kubernetes
-
-Kubernetes is included, but is NOT a major specialization during the 8-week sprint.
-
-Target understanding:
-
-- cluster
-- node
-- pod
-- deployment
-- service
-- ingress
-- ConfigMap
-- Secret
-- replicas
-- health checks
-- autoscaling conceptually
+1. No new mandatory topics; no resource becomes a required course
+   (NeetCode 150, Grokking, CIU, CS329A are never completion targets).
+2. Kubernetes stays light (concepts, one simple deployment if practical).
+3. Watched content never equals mastery; LeetCode count never equals
+   pattern mastery.
+4. Applications start week 1 and never move to the end.
+5. Repeated attempts never inflate the 88-problem metric.
+6. Adapt by evidence: no screens means fix targeting/resume; failed
+   coding screens mean more practice; a scheduled interview always
+   permits temporary reprioritization. The goal is the offer.
+7. Curriculum revisions must preserve existing user progress: rename or
+   re-parent rows in place (see `syncCurriculum` in `lib/seed-user.ts`),
+   never wipe and reseed. Retired problems become extra practice
+   (`inCurriculum: false`), never deletions.

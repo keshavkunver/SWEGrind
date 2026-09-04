@@ -7,9 +7,67 @@ import {
   RESOURCES,
   SD_TOPICS,
   SD_TOPIC_CONTENT,
+  STAR_STEPS,
+  STAR_STORY_PROMPTS,
+  UMPIRE_STEPS,
   WEEK_TASKS,
   slugify,
 } from "@/lib/curriculum";
+import { PROBLEM_KINDS } from "@/lib/constants";
+
+// The canonical interview curriculum architecture: 22 patterns x 4
+// role-based problems = 88 unique problems. These numbers are the spec.
+describe("canonical curriculum architecture", () => {
+  it("has exactly 22 core patterns", () => {
+    expect(PATTERNS).toHaveLength(22);
+  });
+
+  it("every pattern has exactly 4 problems, one per role (A/B/C/D)", () => {
+    for (const name of PATTERNS) {
+      const problems = PATTERN_PROBLEMS[name];
+      expect(problems, `no problems for ${name}`).toBeTruthy();
+      expect(problems, `${name} must have 4 problems`).toHaveLength(4);
+      const roles = problems.map(([, , , role]) => role).sort();
+      expect(roles, `${name} roles must be one of each`).toEqual(
+        [...PROBLEM_KINDS].sort()
+      );
+    }
+  });
+
+  it("produces exactly 88 unique problems (no name reused across patterns)", () => {
+    const names = Object.values(PATTERN_PROBLEMS).flatMap((list) =>
+      list.map(([name]) => name)
+    );
+    expect(names).toHaveLength(88);
+    expect(new Set(names).size).toBe(88);
+  });
+
+  it("UMPIRE spells UMPIRE and STAR + Learning has all five sections", () => {
+    expect(UMPIRE_STEPS.map((s) => s.letter).join("")).toBe("UMPIRE");
+    expect(STAR_STEPS.map((s) => s.name)).toEqual([
+      "Situation",
+      "Task",
+      "Action",
+      "Result",
+      "Learning",
+    ]);
+    expect(STAR_STORY_PROMPTS.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("Grokking is the pattern teacher and NeetCode the problem bank in resources", () => {
+    const titles = RESOURCES.map(([title]) => title);
+    expect(titles).toContain("Grokking the Coding Interview");
+    expect(titles).toContain("NeetCode");
+    expect(titles).toContain("Coding Interview University");
+  });
+
+  it("applications begin in week 1, not week 8", () => {
+    expect(
+      WEEK_TASKS[1].some((t) => t.category === "Career"),
+      "week 1 has no Career task"
+    ).toBe(true);
+  });
+});
 
 // Content renders from code keyed by the seeded names, so the maps must
 // stay aligned with the name arrays or content silently disappears.
@@ -101,6 +159,10 @@ describe("seed data integrity", () => {
       ...Object.values(WEEK_TASKS).flatMap((tasks) =>
         tasks.map((t) => `${t.title} ${t.description ?? ""}`)
       ),
+      ...UMPIRE_STEPS.map((s) => `${s.name} ${s.detail}`),
+      ...STAR_STEPS.map((s) => `${s.name} ${s.detail}`),
+      ...STAR_STORY_PROMPTS,
+      ...RESOURCES.map(([title, , , , description]) => `${title} ${description}`),
     ];
     for (const text of texts) {
       expect(text.includes("—"), `em dash in: ${text}`).toBe(false);

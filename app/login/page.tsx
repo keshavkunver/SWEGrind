@@ -44,14 +44,14 @@ export default function LoginPage() {
                 required
                 minLength={6}
                 autoComplete="current-password"
-                className="w-full rounded border border-zinc-300 py-1.5 pl-2 pr-10"
+                className="w-full rounded border border-zinc-300 py-1.5 pl-2 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 flex w-9 items-center justify-center text-zinc-400 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-zinc-400 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-500"
               >
                 {showPassword ? (
                   // eye-off

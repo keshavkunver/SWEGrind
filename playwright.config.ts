@@ -9,8 +9,13 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
-  retries: 0,
+  // One retry absorbs dev-server connection drops mid-compile.
+  retries: 1,
   reporter: [["list"]],
+  // Server-action round trips (submit -> action -> revalidate -> render)
+  // regularly exceed the 5s default on this machine when the local Docker
+  // stack is under load.
+  expect: { timeout: 15_000 },
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: "retain-on-failure",

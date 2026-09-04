@@ -42,6 +42,10 @@ export default async function DashboardPage() {
   const interviewReady = patterns.filter(
     (p) => p.confidence === "interview_ready"
   ).length;
+  // Unique curriculum problems vs total practice attempts: spaced-review
+  // re-solves add attempts but never inflate the unique count.
+  const coreProblems = problems.filter((p) => p.inCurriculum);
+  const uniqueDone = countComplete(coreProblems);
 
   const dueProblems = problems.filter(
     (p) => p.nextReviewAt && p.nextReviewAt <= reviewCutoff
@@ -54,8 +58,8 @@ export default async function DashboardPage() {
   const tiles = [
     {
       label: "Interview prep",
-      value: pct([...interviewTasks, ...problems]),
-      detail: `${interviewReady}/${patterns.length} patterns interview ready`,
+      value: pct([...interviewTasks, ...coreProblems]),
+      detail: `${uniqueDone}/${coreProblems.length} problems · ${interviewReady}/${patterns.length} patterns ready`,
       href: "/interview",
     },
     {

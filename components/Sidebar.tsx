@@ -8,8 +8,8 @@ import { signOut } from "@/lib/auth-actions";
 // top bar (brand + sign out) plus a fixed bottom tab bar for thumb reach.
 const NAV = [
   { href: "/", label: "Dashboard", short: "Home", icon: "home" },
-  { href: "/roadmap", label: "Roadmap", short: "Roadmap", icon: "map" },
-  { href: "/interview", label: "Interview Prep", short: "Interview", icon: "code" },
+  { href: "/roadmap", label: "Roadmap", short: "Map", icon: "map" },
+  { href: "/interview", label: "Interview Prep", short: "Prep", icon: "code" },
   { href: "/system-design", label: "System Design", short: "Design", icon: "layers" },
   { href: "/project", label: "Project", short: "Project", icon: "box" },
   { href: "/notes", label: "Notes", short: "Notes", icon: "note" },
@@ -92,7 +92,7 @@ export function Sidebar({ email }: { email?: string }) {
         <form action={signOut}>
           <button
             type="submit"
-            className="rounded-md px-3 py-1.5 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-500"
+            className="rounded-md px-3 py-2.5 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-500"
           >
             Sign out
           </button>
@@ -111,7 +111,7 @@ export function Sidebar({ email }: { email?: string }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-2.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-zinc-500 ${
+            className={`flex items-center gap-2.5 whitespace-nowrap rounded-md px-3 py-2.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-zinc-500 lg:py-1.5 ${
               isActive(item.href)
                 ? "bg-zinc-900 text-white"
                 : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"

@@ -61,6 +61,19 @@ describe("cycleProblemStatus", () => {
     expect(data.reviewInterval).toBe(3);
     expect(data.nextReviewAt).toBeInstanceOf(Date);
     expect(data.lastReviewed).toBeInstanceOf(Date);
+    expect(data.attemptCount).toEqual({ increment: 1 });
+  });
+
+  it("only completion counts as an attempt; starting work does not", async () => {
+    problem.findFirstOrThrow.mockResolvedValue({
+      status: "not_started",
+      reviewInterval: 0,
+      firstAttempt: null,
+    });
+    await cycleProblemStatus("p1");
+    expect(problem.update.mock.calls[0][0].data).not.toHaveProperty(
+      "attemptCount"
+    );
   });
 
   it("re-completing resumes the earned interval instead of resetting (the mis-tap bug)", async () => {
@@ -129,12 +142,13 @@ describe("cycleSdTopicStatus", () => {
 });
 
 describe("reviewItem", () => {
-  it("steps a problem up the ladder and stamps lastReviewed", async () => {
+  it("steps a problem up the ladder, stamps lastReviewed, and counts the attempt", async () => {
     problem.findFirstOrThrow.mockResolvedValue({ reviewInterval: 3 });
     await reviewItem("problem", "p1", "good");
     const data = problem.update.mock.calls[0][0].data;
     expect(data.reviewInterval).toBe(7);
     expect(data.lastReviewed).toBeInstanceOf(Date);
+    expect(data.attemptCount).toEqual({ increment: 1 });
   });
 
   it("scopes the read to the signed-in user", async () => {

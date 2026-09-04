@@ -58,7 +58,7 @@ export function ProblemRow({ problem }: { problem: Problem }) {
         </p>
       )}
       <details className="mt-1">
-        <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
+        <summary className="cursor-pointer py-2 text-xs text-zinc-400 hover:text-zinc-700 md:py-0">
           My solution notes
         </summary>
         <form
@@ -127,6 +127,8 @@ export function ProblemRow({ problem }: { problem: Problem }) {
                 first attempted {fmtDate(problem.firstAttempt)}
                 {problem.lastReviewed &&
                   ` · last reviewed ${fmtDate(problem.lastReviewed)}`}
+                {problem.attemptCount > 0 &&
+                  ` · ${problem.attemptCount} attempt${problem.attemptCount === 1 ? "" : "s"}`}
               </span>
             )}
           </div>

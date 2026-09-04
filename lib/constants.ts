@@ -33,16 +33,25 @@ export const CONFIDENCE_LEVELS = [
   "interview_ready",
 ] as const;
 
+// Mastery ladder (0-5). Tracked separately from problem completion:
+// checking off a pattern's four problems does not make it mastered.
 export const CONFIDENCE_LABELS: Record<string, string> = {
-  unknown: "Unknown",
-  recognize: "Recognize",
-  explain: "Can explain",
-  guided: "Can use with guidance",
-  independent: "Can use independently",
-  interview_ready: "Interview ready",
+  unknown: "0 · Unknown",
+  recognize: "1 · Understand the concept",
+  explain: "2 · Recognize obvious examples",
+  guided: "3 · Solve guided applications",
+  independent: "4 · Apply independently",
+  interview_ready: "5 · Interview ready",
 };
 
-export const PROBLEM_KINDS = ["guided", "independent", "review"] as const;
+// The four curriculum problem roles per pattern (A/B/C/D): scaffolding is
+// progressively removed from guided walkthrough to unlabeled transfer test.
+export const PROBLEM_KINDS = [
+  "guided",
+  "supported",
+  "independent",
+  "transfer",
+] as const;
 
 export const RESOURCE_TYPES = [
   "docs",

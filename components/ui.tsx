@@ -55,7 +55,7 @@ export function StatusCycler({
       <button
         type="submit"
         title="Click to cycle status"
-        className={`rounded-full border px-2.5 py-1 text-xs font-medium cursor-pointer transition-colors hover:opacity-75 focus-visible:ring-2 focus-visible:ring-zinc-500 ${
+        className={`rounded-full border px-2.5 py-2 text-xs font-medium cursor-pointer transition-colors hover:opacity-75 focus-visible:ring-2 focus-visible:ring-zinc-500 md:py-1 ${
           STATUS_STYLES[status] ?? STATUS_STYLES.not_started
         }`}
       >

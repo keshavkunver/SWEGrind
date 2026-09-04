@@ -83,11 +83,17 @@ export async function cycleProblemStatus(id: string) {
       // Stamp firstAttempt the first time work starts on a problem.
       firstAttempt:
         p.firstAttempt ?? (status !== "not_started" ? new Date() : null),
-      // Completing schedules the next spaced review; un-completing removes
-      // it from the queue but keeps the earned ladder position, so an
-      // accidental tap costs nothing.
+      // Completing counts as a practice attempt and schedules the next
+      // spaced review; un-completing removes it from the queue but keeps
+      // the earned ladder position, so an accidental tap costs nothing.
+      // Attempts accumulate separately from completion: re-solves never
+      // inflate the unique-problem metric.
       ...(completing
-        ? { lastReviewed: new Date(), ...resumeReview(p.reviewInterval, 3) }
+        ? {
+            lastReviewed: new Date(),
+            attemptCount: { increment: 1 },
+            ...resumeReview(p.reviewInterval, 3),
+          }
         : { nextReviewAt: null }),
     },
   });
@@ -209,9 +215,14 @@ export async function reviewItem(
   const days = nextIntervalDays(current, rating);
   const data = { reviewInterval: days, nextReviewAt: daysFromNow(days) };
   if (kind === "problem") {
+    // A spaced review is a fresh practice attempt at the problem.
     await db.problem.update({
       where: { id },
-      data: { ...data, lastReviewed: new Date() },
+      data: {
+        ...data,
+        lastReviewed: new Date(),
+        attemptCount: { increment: 1 },
+      },
     });
   } else {
     await db.sdTopic.update({ where: { id }, data });

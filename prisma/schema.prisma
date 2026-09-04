@@ -55,10 +55,14 @@ model Problem {
   url           String    @default("")
   patternId     String
   pattern       Pattern   @relation(fields: [patternId], references: [id], onDelete: Cascade)
-  kind          String    @default("independent") // guided | independent | review
+  kind          String    @default("independent") // guided | supported | independent | transfer
   difficulty    String    @default("medium") // easy | medium | hard
   status        String    @default("not_started")
   confidence    String    @default("unknown")
+  // Curriculum problems count toward the 88-problem core; extras
+  // (spaced-review re-solves, retired problems) never inflate that metric.
+  inCurriculum  Boolean   @default(true)
+  attemptCount  Int       @default(0) // completions + spaced reviews
   firstAttempt  DateTime?
   lastReviewed  DateTime?
   timeComplexity  String  @default("")

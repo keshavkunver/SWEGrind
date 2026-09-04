@@ -21,6 +21,14 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
         purpose: "any",
       },
+      // Full-bleed variant with the mark inside the safe zone, so Android
+      // adaptive launchers don't letterbox or shrink the icon.
+      {
+        src: "/icon-512-maskable.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
     ],
   };
 }

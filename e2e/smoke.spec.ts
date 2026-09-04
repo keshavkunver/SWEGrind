@@ -17,7 +17,9 @@ test("dashboard shows the seeded curriculum and live progress", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.getByText("0/12 patterns interview ready")).toBeVisible();
+  await expect(
+    page.getByText("0/88 problems · 0/22 patterns ready")
+  ).toBeVisible();
   await expect(page.getByText("learning tasks")).toBeVisible();
   await expect(page.getByText("15 topics")).toBeVisible();
   await expect(page.getByText("of 18 milestones done")).toBeVisible();
@@ -34,11 +36,11 @@ test("dashboard shows the seeded curriculum and live progress", async ({
 test("pattern page renders content from code and schedules reviews on completion", async ({
   page,
 }) => {
-  await page.goto("/interview/arrays-hashing");
+  await page.goto("/interview/hash-maps-sets");
   await expect(
     page.getByRole("heading", { name: "When to reach for this pattern" })
   ).toBeVisible();
-  await expect(page.getByText("Need O(1) lookup")).toBeVisible();
+  await expect(page.getByText(/Frequency or counts means hash map/)).toBeVisible();
 
   const twoSum = /Two Sum/;
   await expect(page.getByRole("link", { name: twoSum })).toBeVisible();
@@ -122,6 +124,6 @@ test("signing out gates every route behind login", async ({ page }) => {
   await page.getByRole("button", { name: "Sign out" }).first().click();
   await expect(page).toHaveURL(/\/login/);
 
-  await page.goto("/interview/arrays-hashing");
+  await page.goto("/interview/hash-maps-sets");
   await expect(page).toHaveURL(/\/login/);
 });

@@ -57,11 +57,11 @@ export default async function ProjectPage() {
             {m.tasks.length > 0 && (
               <ul className="mt-2 grid gap-1">
                 {m.tasks.map((t) => (
-                  <li key={t.id} className="flex items-center gap-2 text-sm">
+                  <li key={t.id} className="flex items-center gap-3 text-sm md:gap-2">
                     <form action={toggleMilestoneTask.bind(null, t.id)}>
                       <button
                         type="submit"
-                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border text-xs ${
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded border text-xs md:h-6 md:w-6 ${
                           t.done
                             ? "border-emerald-500 bg-emerald-500 text-white"
                             : "border-zinc-300 bg-white hover:border-zinc-500"
@@ -74,12 +74,12 @@ export default async function ProjectPage() {
                     <span className={t.done ? "text-zinc-400 line-through" : ""}>
                       {t.title}
                     </span>
-                    <form action={deleteMilestoneTask.bind(null, t.id)}>
+                    <form action={deleteMilestoneTask.bind(null, t.id)} className="ml-auto">
                       <ConfirmButton
                         action={deleteMilestoneTask.bind(null, t.id)}
                         message={`Delete "${t.title}"?`}
                         aria-label={`Delete ${t.title}`}
-                        className="p-1.5 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                        className="p-3 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500 md:p-1.5"
                       >
                         ✕
                       </ConfirmButton>
@@ -109,7 +109,7 @@ export default async function ProjectPage() {
             </form>
 
             <details className="mt-2">
-              <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
+              <summary className="cursor-pointer py-2 text-xs text-zinc-400 hover:text-zinc-700 md:py-0">
                 Edit milestone
               </summary>
               <form

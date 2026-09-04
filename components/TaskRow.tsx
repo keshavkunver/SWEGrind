@@ -29,7 +29,7 @@ export function TaskRow({ task }: { task: Task }) {
         <LinkChips json={task.links} />
       </div>
       <details className="mt-1.5">
-        <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
+        <summary className="cursor-pointer py-2 text-xs text-zinc-400 hover:text-zinc-700 md:py-0">
           {task.notes ? "My notes" : "Add a note"}
         </summary>
         <form
