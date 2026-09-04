@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
+import { SD_TOPIC_CONTENT } from "@/lib/curriculum";
 import { pct } from "@/lib/progress";
-import { parseLinksJson } from "@/lib/links";
 import { Card, PageHeader, ProgressBar, StatusBadge } from "@/components/ui";
 
 export default async function SystemDesignPage() {
@@ -31,9 +31,9 @@ export default async function SystemDesignPage() {
                   {i + 1}
                 </span>
                 <span className="truncate font-medium">{t.name}</span>
-                {parseLinksJson(t.links).length > 0 && (
+                {(SD_TOPIC_CONTENT[t.name]?.links.length ?? 0) > 0 && (
                   <span className="hidden text-xs text-zinc-400 sm:inline">
-                    {parseLinksJson(t.links).length} links
+                    {SD_TOPIC_CONTENT[t.name].links.length} links
                   </span>
                 )}
               </div>

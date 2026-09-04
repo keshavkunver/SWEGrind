@@ -1,22 +1,17 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { signIn, signUp, type AuthState } from "@/lib/auth-actions";
+import { authenticate, type AuthState } from "@/lib/auth-actions";
 
 export default function LoginPage() {
-  const [signInState, signInAction, signInPending] = useActionState<
-    AuthState,
-    FormData
-  >(signIn, null);
-  const [signUpState, signUpAction, signUpPending] = useActionState<
-    AuthState,
-    FormData
-  >(signUp, null);
+  const [state, formAction, pending] = useActionState<AuthState, FormData>(
+    authenticate,
+    null
+  );
   const [showPassword, setShowPassword] = useState(false);
 
-  const error = signInState?.error ?? signUpState?.error;
-  const message = signInState?.message ?? signUpState?.message;
-  const pending = signInPending || signUpPending;
+  const error = state?.error;
+  const message = state?.message;
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
@@ -26,7 +21,7 @@ export default function LoginPage() {
           Sign in to track your 8-week plan. New here? Use the same form and
           hit &ldquo;Create account&rdquo;.
         </p>
-        <form className="mt-4 grid gap-3">
+        <form action={formAction} className="mt-4 grid gap-3">
           <label className="grid gap-1 text-sm">
             <span className="text-xs font-medium text-zinc-500">Email</span>
             <input
@@ -106,15 +101,22 @@ export default function LoginPage() {
             )}
           </div>
           <div className="mt-1 flex gap-2">
+            {/* The submitter's name/value rides along in the FormData, so
+                one action serves both buttons. (No per-button formAction:
+                React reserves button `name` for its action refs there.) */}
             <button
-              formAction={signInAction}
+              type="submit"
+              name="intent"
+              value="signin"
               disabled={pending}
               className="flex-1 rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
             >
               Sign in
             </button>
             <button
-              formAction={signUpAction}
+              type="submit"
+              name="intent"
+              value="signup"
               disabled={pending}
               className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 disabled:opacity-50"
             >

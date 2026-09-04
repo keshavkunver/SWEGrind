@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { updatePatternStudy } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
 import { CONFIDENCE_LABELS, CONFIDENCE_LEVELS, PROBLEM_KINDS } from "@/lib/constants";
+import { PATTERN_SIGNALS } from "@/lib/curriculum";
 import { derivedStatus } from "@/lib/progress";
 import { BackLink, Card, ConfidenceBadge, PageHeader, StatusBadge } from "@/components/ui";
 import { ProblemRow } from "@/components/ProblemRow";
@@ -45,12 +46,12 @@ export default async function PatternPage({
         }
       />
 
-      {pattern.signals && (
+      {PATTERN_SIGNALS[pattern.name] && (
         <Card className="mb-4">
           <h2 className="mb-1 text-sm font-semibold text-zinc-600">
             When to reach for this pattern
           </h2>
-          <p className="text-sm text-zinc-700">{pattern.signals}</p>
+          <p className="text-sm text-zinc-700">{PATTERN_SIGNALS[pattern.name]}</p>
         </Card>
       )}
 

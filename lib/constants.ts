@@ -1,21 +1,10 @@
 export const STATUSES = ["not_started", "in_progress", "complete"] as const;
-export type Status = (typeof STATUSES)[number];
 
 export const STATUS_LABELS: Record<string, string> = {
   not_started: "Not started",
   in_progress: "In progress",
   complete: "Complete",
 };
-
-export const CATEGORIES = [
-  "InterviewPrep",
-  "Engineering",
-  "SystemDesign",
-  "AIEngineering",
-  "Project",
-  "Career",
-] as const;
-export type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_LABELS: Record<string, string> = {
   InterviewPrep: "Interview Prep",
@@ -43,7 +32,6 @@ export const CONFIDENCE_LEVELS = [
   "independent",
   "interview_ready",
 ] as const;
-export type Confidence = (typeof CONFIDENCE_LEVELS)[number];
 
 export const CONFIDENCE_LABELS: Record<string, string> = {
   unknown: "Unknown",
@@ -53,8 +41,6 @@ export const CONFIDENCE_LABELS: Record<string, string> = {
   independent: "Can use independently",
   interview_ready: "Interview ready",
 };
-
-export const DIFFICULTIES = ["easy", "medium", "hard"] as const;
 
 export const PROBLEM_KINDS = ["guided", "independent", "review"] as const;
 

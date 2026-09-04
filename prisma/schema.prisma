@@ -12,36 +12,35 @@ datasource db {
 }
 
 model Task {
-  id           String    @id @default(cuid())
-  userId       String
-  week         Int
-  day          Int // 1-7 within the week
-  order        Int       @default(0)
-  title        String
-  description  String    @default("")
-  category     String // InterviewPrep | Engineering | SystemDesign | AIEngineering | Project | Career
-  estMinutes   Int? // estimated duration
-  status       String    @default("not_started") // not_started | in_progress | complete
-  links        String    @default("[]") // JSON: [{ label, url }]
-  notes        String    @default("")
-  practice     String    @default("") // optional practice items, freeform
-  recall       String    @default("") // optional recall questions, freeform
-  nextReviewAt DateTime?
-  reviewInterval Int     @default(0) // days; current spaced-repetition step
-  noteEntries  Note[]
+  id          String @id @default(cuid())
+  userId      String
+  week        Int
+  day         Int // 1-7 within the week
+  order       Int    @default(0)
+  title       String
+  description String @default("")
+  category    String // InterviewPrep | Engineering | SystemDesign | AIEngineering | Project | Career
+  estMinutes  Int? // estimated duration
+  status      String @default("not_started") // not_started | in_progress | complete
+  links       String @default("[]") // JSON: [{ label, url }]
+  notes       String @default("")
+  noteEntries Note[]
 
+  // Makes concurrent first-load seeding idempotent (createMany + skipDuplicates).
+  @@unique([userId, week, day, title])
   @@index([userId, week, day])
 }
 
+// Pattern/topic CONTENT (recognition signals, learning links, practice and
+// recall questions) lives in lib/curriculum.ts and renders from code; the
+// DB rows hold only the learner's progress and notes.
 model Pattern {
   id          String    @id @default(cuid())
   userId      String
   slug        String
   name        String
   order       Int       @default(0)
-  notes       String    @default("") // explanation / notes
-  signals     String    @default("") // recognition signals
-  status      String    @default("not_started")
+  notes       String    @default("") // learner's own study notes
   confidence  String    @default("unknown") // unknown | recognize | explain | guided | independent | interview_ready
   problems    Problem[]
   noteEntries Note[]
@@ -69,24 +68,23 @@ model Problem {
   reviewInterval Int      @default(0) // days; current spaced-repetition step
   noteEntries   Note[]
 
+  // Makes concurrent first-load seeding idempotent (createMany + skipDuplicates).
+  @@unique([userId, patternId, name])
   @@index([patternId])
   @@index([userId])
 }
 
 model SdTopic {
-  id           String    @id @default(cuid())
-  userId       String
-  slug         String
-  name         String
-  order        Int       @default(0)
-  status       String    @default("not_started")
-  notes        String    @default("")
-  links        String    @default("[]") // JSON: [{ label, url }]
-  practice     String    @default("") // practice design questions
-  recall       String    @default("") // recall questions
-  nextReviewAt DateTime?
-  reviewInterval Int     @default(0) // days; current spaced-repetition step
-  noteEntries  Note[]
+  id             String    @id @default(cuid())
+  userId         String
+  slug           String
+  name           String
+  order          Int       @default(0)
+  status         String    @default("not_started")
+  notes          String    @default("") // learner's own study notes
+  nextReviewAt   DateTime?
+  reviewInterval Int       @default(0) // days; current spaced-repetition step
+  noteEntries    Note[]
 
   @@unique([userId, slug])
 }
@@ -139,15 +137,16 @@ model Note {
   @@index([userId])
 }
 
+// Only the learner's own additions live here; the curriculum library
+// renders from RESOURCES in lib/curriculum.ts.
 model Resource {
-  id          String  @id @default(cuid())
+  id          String @id @default(cuid())
   userId      String
   title       String
   url         String
-  type        String  @default("docs") // docs | course | video | article | tool | practice
-  topic       String  @default("")
-  description String  @default("")
-  seeded      Boolean @default(false) // curriculum resource: not deletable
+  type        String @default("docs") // docs | course | video | article | tool | practice
+  topic       String @default("")
+  description String @default("")
 
   @@index([userId])
 }

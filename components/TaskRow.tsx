@@ -28,27 +28,6 @@ export function TaskRow({ task }: { task: Task }) {
       <div className="mt-1.5">
         <LinkChips json={task.links} />
       </div>
-      {(task.practice || task.recall) && (
-        <details className="mt-1.5">
-          <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
-            Practice &amp; recall
-          </summary>
-          <div className="mt-1 grid gap-2 text-sm sm:grid-cols-2">
-            {task.practice && (
-              <div className="rounded bg-zinc-50 p-2">
-                <p className="text-xs font-semibold text-zinc-500">Practice</p>
-                <p className="whitespace-pre-wrap">{task.practice}</p>
-              </div>
-            )}
-            {task.recall && (
-              <div className="rounded bg-zinc-50 p-2">
-                <p className="text-xs font-semibold text-zinc-500">Recall</p>
-                <p className="whitespace-pre-wrap">{task.recall}</p>
-              </div>
-            )}
-          </div>
-        </details>
-      )}
       <details className="mt-1.5">
         <summary className="cursor-pointer text-xs text-zinc-400 hover:text-zinc-700">
           {task.notes ? "My notes" : "Add a note"}

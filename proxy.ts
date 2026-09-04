@@ -3,7 +3,8 @@ import { createServerClient } from "@supabase/ssr";
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase/keys";
 
 // Refreshes the Supabase session cookie and gates every page behind login.
-export async function middleware(request: NextRequest) {
+// (proxy.ts is Next 16's successor to the deprecated middleware.ts.)
+export default async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {

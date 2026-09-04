@@ -3,17 +3,18 @@ import {
   MILESTONES,
   PATTERNS,
   PATTERN_PROBLEMS,
-  PATTERN_SIGNALS,
-  RESOURCES,
   SD_TOPICS,
-  SD_TOPIC_CONTENT,
   WEEK_TASKS,
   slugify,
 } from "./curriculum";
 
-// Populates a fresh account with the 8-week curriculum. Called from the
-// dashboard when the signed-in user has no patterns yet, so it runs
-// exactly once per user and never touches existing data.
+// Populates a fresh account with per-user PROGRESS rows for the curriculum
+// (statuses, notes, review state). The curriculum content itself (signals,
+// topic links/practice/recall, the resource library) renders straight from
+// lib/curriculum.ts and is never copied into the database.
+//
+// Every createMany uses skipDuplicates against a unique constraint, so two
+// concurrent first loads can both run this safely.
 export async function seedUser(userId: string) {
   await db.pattern.createMany({
     data: PATTERNS.map((name, i) => ({
@@ -21,7 +22,6 @@ export async function seedUser(userId: string) {
       name,
       slug: slugify(name),
       order: i,
-      signals: PATTERN_SIGNALS[name] ?? "",
     })),
     skipDuplicates: true,
   });
@@ -34,9 +34,6 @@ export async function seedUser(userId: string) {
       name,
       slug: slugify(name),
       order: i,
-      links: JSON.stringify(SD_TOPIC_CONTENT[name]?.links ?? []),
-      practice: SD_TOPIC_CONTENT[name]?.practice ?? "",
-      recall: SD_TOPIC_CONTENT[name]?.recall ?? "",
     })),
     skipDuplicates: true,
   });
@@ -49,18 +46,6 @@ export async function seedUser(userId: string) {
       order: i,
     })),
     skipDuplicates: true,
-  });
-
-  await db.resource.createMany({
-    data: RESOURCES.map(([title, url, type, topic, description]) => ({
-      userId,
-      title,
-      url,
-      type,
-      topic,
-      description,
-      seeded: true,
-    })),
   });
 
   await db.task.createMany({
@@ -77,6 +62,7 @@ export async function seedUser(userId: string) {
         links: JSON.stringify(t.links ?? []),
       }))
     ),
+    skipDuplicates: true,
   });
 }
 
@@ -99,43 +85,22 @@ async function seedProblems(userId: string) {
       }));
     }
   );
-  await db.problem.createMany({ data });
-}
-
-// Fills curriculum content added after an account was created. Only ever
-// writes fields that are still empty, so user data is never overwritten.
-async function backfillContent(userId: string) {
-  for (const [name, signals] of Object.entries(PATTERN_SIGNALS)) {
-    await db.pattern.updateMany({
-      where: { userId, slug: slugify(name), signals: "" },
-      data: { signals },
-    });
-  }
-  // Resources created before the seeded flag existed: mark curriculum ones.
-  await db.resource.updateMany({
-    where: { userId, seeded: false, title: { in: RESOURCES.map(([t]) => t) } },
-    data: { seeded: true },
-  });
-  for (const [name, content] of Object.entries(SD_TOPIC_CONTENT)) {
-    await db.sdTopic.updateMany({
-      where: { userId, slug: slugify(name), links: "[]", practice: "" },
-      data: {
-        links: JSON.stringify(content.links),
-        practice: content.practice,
-        recall: content.recall,
-      },
-    });
-  }
+  await db.problem.createMany({ data, skipDuplicates: true });
 }
 
 export async function ensureSeeded(userId: string) {
-  const patternCount = await db.pattern.count({ where: { userId } });
-  if (patternCount === 0) {
+  const hasPatterns = await db.pattern.findFirst({
+    where: { userId },
+    select: { id: true },
+  });
+  if (!hasPatterns) {
     await seedUser(userId);
     return;
   }
-  // Account predates parts of the curriculum: fill in what's missing.
-  const problemCount = await db.problem.count({ where: { userId } });
-  if (problemCount === 0) await seedProblems(userId);
-  await backfillContent(userId);
+  // Account predates the problem lists: fill them in once.
+  const hasProblems = await db.problem.findFirst({
+    where: { userId },
+    select: { id: true },
+  });
+  if (!hasProblems) await seedProblems(userId);
 }

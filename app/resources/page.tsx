@@ -2,8 +2,20 @@ import { db } from "@/lib/db";
 import { createResource, deleteResource } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
 import { RESOURCE_TYPES } from "@/lib/constants";
+import { RESOURCES } from "@/lib/curriculum";
 import { Card, PageHeader } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
+
+// One display shape for both sources: curriculum entries render from code
+// (not deletable), the learner's own additions come from the database.
+type Entry = {
+  id: string | null; // null = curriculum entry
+  title: string;
+  url: string;
+  type: string;
+  topic: string;
+  description: string;
+};
 
 export default async function ResourcesPage({
   searchParams,
@@ -12,43 +24,52 @@ export default async function ResourcesPage({
 }) {
   const { q = "" } = await searchParams;
   const user = await requireUser();
-  const resources = await db.resource.findMany({
-    where: {
-      userId: user.id,
-      ...(q
-        ? {
-            OR: [
-              { title: { contains: q, mode: "insensitive" as const } },
-              { topic: { contains: q, mode: "insensitive" as const } },
-              { description: { contains: q, mode: "insensitive" as const } },
-            ],
-          }
-        : {}),
-    },
+  const userResources = await db.resource.findMany({
+    where: { userId: user.id },
     orderBy: [{ topic: "asc" }, { title: "asc" }],
   });
 
-  const topics = [...new Set(resources.map((r) => r.topic || "General"))];
+  const entries: Entry[] = [
+    ...RESOURCES.map(([title, url, type, topic, description]) => ({
+      id: null,
+      title,
+      url,
+      type,
+      topic,
+      description,
+    })),
+    ...userResources,
+  ];
+
+  const needle = q.toLowerCase();
+  const visible = q
+    ? entries.filter((e) =>
+        [e.title, e.topic, e.description].some((s) =>
+          s.toLowerCase().includes(needle)
+        )
+      )
+    : entries;
+
+  const topics = [...new Set(visible.map((e) => e.topic || "General"))].sort();
 
   return (
     <div>
       <PageHeader
         title="Resources"
-        subtitle="Central library of external learning resources."
+        subtitle="The curriculum library plus anything you add yourself."
       />
 
       <form method="GET" className="mb-4 flex gap-2">
         <input
           type="search"
           name="q"
-          aria-label="Filter resources"
           defaultValue={q}
           placeholder="Filter by title or topic…"
           className="w-full max-w-sm rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm"
         />
         <button
           type="submit"
-          className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+          className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-500"
         >
           Filter
         </button>
@@ -59,23 +80,21 @@ export default async function ResourcesPage({
         <form action={createResource} className="grid gap-2 text-sm sm:grid-cols-2">
           <input
             name="title"
-            aria-label="Resource title"
+            aria-label="Title"
             placeholder="Title"
             required
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <input
             name="url"
-            type="url"
-            aria-label="Resource URL"
-            spellCheck={false}
+            aria-label="URL"
             placeholder="https://…"
             required
             className="rounded border border-zinc-300 px-2 py-1"
           />
           <select
             name="type"
-            aria-label="Resource type"
+            aria-label="Type"
             defaultValue="docs"
             className="rounded border border-zinc-300 bg-white px-2 py-1 capitalize"
           >
@@ -100,7 +119,7 @@ export default async function ResourcesPage({
           <div>
             <button
               type="submit"
-              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-500"
             >
               Add
             </button>
@@ -112,35 +131,38 @@ export default async function ResourcesPage({
         <div key={topic} className="mb-5">
           <h2 className="mb-2 text-sm font-semibold text-zinc-600">{topic}</h2>
           <div className="grid gap-2">
-            {resources
-              .filter((r) => (r.topic || "General") === topic)
-              .map((r) => (
-                <Card key={r.id} className="flex items-center justify-between gap-3 py-3">
+            {visible
+              .filter((e) => (e.topic || "General") === topic)
+              .map((e) => (
+                <Card
+                  key={e.id ?? e.url}
+                  className="flex items-center justify-between gap-3 py-3"
+                >
                   <div className="min-w-0">
                     <a
-                      href={r.url}
+                      href={e.url}
                       target="_blank"
                       rel="noreferrer"
                       className="font-medium text-blue-700 hover:underline"
                     >
-                      {r.title} ↗
+                      {e.title} ↗
                     </a>
                     <span className="ml-2 rounded bg-zinc-100 px-1.5 py-0.5 text-[11px] capitalize text-zinc-600">
-                      {r.type}
+                      {e.type}
                     </span>
-                    {r.description && (
+                    {e.description && (
                       <p className="mt-0.5 truncate text-sm text-zinc-500">
-                        {r.description}
+                        {e.description}
                       </p>
                     )}
                   </div>
-                  {!r.seeded && (
-                    <form action={deleteResource.bind(null, r.id)}>
+                  {e.id && (
+                    <form action={deleteResource.bind(null, e.id)}>
                       <ConfirmButton
-                        action={deleteResource.bind(null, r.id)}
-                        message={`Delete resource "${r.title}"?`}
-                        aria-label={`Delete ${r.title}`}
-                        className="text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
+                        action={deleteResource.bind(null, e.id)}
+                        message={`Delete resource "${e.title}"?`}
+                        aria-label={`Delete ${e.title}`}
+                        className="p-1.5 text-xs text-zinc-300 hover:text-red-500 focus-visible:ring-2 focus-visible:ring-zinc-500"
                       >
                         ✕
                       </ConfirmButton>
@@ -151,8 +173,10 @@ export default async function ResourcesPage({
           </div>
         </div>
       ))}
-      {resources.length === 0 && (
-        <p className="text-sm text-zinc-400">No resources yet.</p>
+      {visible.length === 0 && (
+        <p className="text-sm text-zinc-400">
+          {q ? `Nothing matching “${q}”.` : "No resources yet."}
+        </p>
       )}
     </div>
   );

@@ -33,6 +33,14 @@ function daysFromNow(days: number): Date {
   return d;
 }
 
+// Completing an item schedules its next spaced review. A previously built
+// ladder position survives an un-complete/re-complete round trip: resume at
+// the stored interval rather than resetting to the initial one.
+function resumeReview(storedInterval: number, initialDays: number) {
+  const days = storedInterval > 0 ? storedInterval : initialDays;
+  return { nextReviewAt: daysFromNow(days), reviewInterval: days };
+}
+
 // ---- Roadmap tasks: complete them, write notes ----
 
 export async function cycleTaskStatus(id: string) {
@@ -86,15 +94,12 @@ export async function cycleProblemStatus(id: string) {
       // Stamp firstAttempt the first time work starts on a problem.
       firstAttempt:
         p.firstAttempt ?? (status !== "not_started" ? new Date() : null),
-      // Completing a problem schedules its first spaced review
-      // automatically; un-completing takes it back out of the queue.
+      // Completing schedules the next spaced review; un-completing removes
+      // it from the queue but keeps the earned ladder position, so an
+      // accidental tap costs nothing.
       ...(completing
-        ? {
-            lastReviewed: new Date(),
-            nextReviewAt: daysFromNow(3),
-            reviewInterval: 3,
-          }
-        : { nextReviewAt: null, reviewInterval: 0 }),
+        ? { lastReviewed: new Date(), ...resumeReview(p.reviewInterval, 3) }
+        : { nextReviewAt: null }),
     },
   });
   refresh();
@@ -129,8 +134,8 @@ export async function cycleSdTopicStatus(id: string) {
     data: {
       status,
       ...(status === "complete"
-        ? { nextReviewAt: daysFromNow(7), reviewInterval: 7 }
-        : { nextReviewAt: null, reviewInterval: 0 }),
+        ? resumeReview(t.reviewInterval, 7)
+        : { nextReviewAt: null }),
     },
   });
   refresh();
@@ -203,7 +208,7 @@ export async function deleteMilestoneTask(id: string) {
 // current interval, "Easy" skips a step.
 const REVIEW_LADDER = [1, 3, 7, 14, 30, 60];
 
-export type ReviewKind = "task" | "problem" | "sdTopic";
+export type ReviewKind = "problem" | "sdTopic";
 export type ReviewRating = "again" | "good" | "easy";
 
 function nextIntervalDays(current: number, rating: ReviewRating): number {
@@ -220,24 +225,19 @@ export async function reviewItem(
   rating: ReviewRating
 ) {
   const user = await requireUser();
-  const now = new Date();
   const where = { id, userId: user.id };
 
   const current =
-    kind === "task"
-      ? (await db.task.findFirstOrThrow({ where })).reviewInterval
-      : kind === "problem"
-        ? (await db.problem.findFirstOrThrow({ where })).reviewInterval
-        : (await db.sdTopic.findFirstOrThrow({ where })).reviewInterval;
+    kind === "problem"
+      ? (await db.problem.findFirstOrThrow({ where })).reviewInterval
+      : (await db.sdTopic.findFirstOrThrow({ where })).reviewInterval;
 
   const days = nextIntervalDays(current, rating);
   const data = { reviewInterval: days, nextReviewAt: daysFromNow(days) };
-  if (kind === "task") {
-    await db.task.update({ where: { id }, data });
-  } else if (kind === "problem") {
+  if (kind === "problem") {
     await db.problem.update({
       where: { id },
-      data: { ...data, lastReviewed: now },
+      data: { ...data, lastReviewed: new Date() },
     });
   } else {
     await db.sdTopic.update({ where: { id }, data });
@@ -313,9 +313,8 @@ export async function createResource(fd: FormData) {
 
 export async function deleteResource(id: string) {
   const user = await requireUser();
-  // Seeded curriculum resources are read-only content: never deletable.
-  await db.resource.deleteMany({
-    where: { id, userId: user.id, seeded: false },
-  });
+  // Only the learner's own rows exist in this table; the curriculum
+  // library renders from code and has nothing to delete.
+  await db.resource.deleteMany({ where: { id, userId: user.id } });
   refresh();
 }

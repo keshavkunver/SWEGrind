@@ -34,7 +34,12 @@ export function endOfToday(): Date {
   return d;
 }
 
+// Dates are stored as server-local midnight (see daysFromNow in actions),
+// so format with local getters; toISOString would shift the day for any
+// server east of UTC.
 export function fmtDate(d: Date | null): string {
   if (!d) return "";
-  return d.toISOString().slice(0, 10);
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
 }

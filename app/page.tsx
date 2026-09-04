@@ -43,16 +43,13 @@ export default async function DashboardPage() {
     (p) => p.confidence === "interview_ready"
   ).length;
 
-  const dueTasks = tasks.filter(
-    (t) => t.nextReviewAt && t.nextReviewAt <= reviewCutoff
-  );
   const dueProblems = problems.filter(
     (p) => p.nextReviewAt && p.nextReviewAt <= reviewCutoff
   );
   const dueTopics = sdTopics.filter(
     (t) => t.nextReviewAt && t.nextReviewAt <= reviewCutoff
   );
-  const dueCount = dueTasks.length + dueProblems.length + dueTopics.length;
+  const dueCount = dueProblems.length + dueTopics.length;
 
   const tiles = [
     {
@@ -132,10 +129,11 @@ export default async function DashboardPage() {
           </div>
           {todayTasks.length === 0 && (
             <p className="text-sm text-zinc-400">
-              No tasks scheduled for today.{" "}
+              No lessons scheduled today. A good day to{" "}
               <Link href={`/roadmap/${week}`} className="text-blue-700 hover:underline">
-                Add some in week {week}.
-              </Link>
+                get ahead on week {week}
+              </Link>{" "}
+              or clear your review queue.
             </p>
           )}
           {todayTasks.map((t) => (
@@ -200,14 +198,6 @@ export default async function DashboardPage() {
                   {t.name}
                 </Link>
                 <ReviewButtons kind="sdTopic" id={t.id} />
-              </div>
-            ))}
-            {dueTasks.map((t) => (
-              <div key={t.id} className="flex flex-wrap items-center justify-between gap-2">
-                <Link href={`/roadmap/${t.week}`} className="hover:underline">
-                  {t.title}
-                </Link>
-                <ReviewButtons kind="task" id={t.id} />
               </div>
             ))}
           </div>

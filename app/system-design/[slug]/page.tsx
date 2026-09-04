@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { cycleSdTopicStatus, updateSdTopicNotes } from "@/lib/actions";
 import { requireUser } from "@/lib/auth";
+import { SD_TOPIC_CONTENT } from "@/lib/curriculum";
 import { fmtDate } from "@/lib/progress";
 import { BackLink, Card, LinkChips, PageHeader, StatusCycler } from "@/components/ui";
 
@@ -16,6 +17,10 @@ export default async function SdTopicPage({
     where: { slug, userId: user.id },
   });
   if (!topic) notFound();
+
+  // Curriculum content renders from code; the DB row carries only the
+  // learner's progress and notes.
+  const content = SD_TOPIC_CONTENT[topic.name];
 
   return (
     <div>
@@ -35,29 +40,31 @@ export default async function SdTopicPage({
         }
       />
 
-      <Card className="mb-4">
-        <h2 className="mb-2 text-sm font-semibold text-zinc-600">Learn</h2>
-        <LinkChips json={topic.links} />
-      </Card>
+      {content && content.links.length > 0 && (
+        <Card className="mb-4">
+          <h2 className="mb-2 text-sm font-semibold text-zinc-600">Learn</h2>
+          <LinkChips json={JSON.stringify(content.links)} />
+        </Card>
+      )}
 
       <div className="mb-4 grid gap-4 sm:grid-cols-2">
-        {topic.practice && (
+        {content?.practice && (
           <Card>
             <h2 className="mb-1 text-sm font-semibold text-zinc-600">
               Practice
             </h2>
             <p className="whitespace-pre-wrap text-sm text-zinc-700">
-              {topic.practice}
+              {content.practice}
             </p>
           </Card>
         )}
-        {topic.recall && (
+        {content?.recall && (
           <Card>
             <h2 className="mb-1 text-sm font-semibold text-zinc-600">
               Recall questions
             </h2>
             <p className="whitespace-pre-wrap text-sm text-zinc-700">
-              {topic.recall}
+              {content.recall}
             </p>
           </Card>
         )}
@@ -80,7 +87,7 @@ export default async function SdTopicPage({
           <div>
             <button
               type="submit"
-              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 focus-visible:ring-2 focus-visible:ring-zinc-500"
             >
               Save notes
             </button>
