@@ -268,7 +268,7 @@ async function syncCurriculum(userId: string) {
 // without this, content improvements (like adding learning links) would
 // reach only brand-new accounts. Re-copies any drifted row, matched by the
 // same userId|week|day|title identity the unique constraint uses.
-async function refreshTaskContent(userId: string) {
+export async function refreshTaskContent(userId: string) {
   const desired = new Map(
     Object.entries(WEEK_TASKS).flatMap(([week, tasks]) =>
       tasks.map(
