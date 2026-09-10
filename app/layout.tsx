@@ -13,8 +13,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover", // lets the bottom tab bar pad for the iOS home bar
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#161618" },
+  ],
 };
+
+// Applies a stored theme choice before first paint so a forced light/dark
+// never flashes the other theme. No stored choice = follow the system.
+const themeInit = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.classList.add(t)}catch(e){}`;
 
 export default async function RootLayout({
   children,
@@ -27,6 +34,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="bg-zinc-50 text-zinc-900 antialiased">
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-zinc-900 focus:px-3 focus:py-1.5 focus:text-white"

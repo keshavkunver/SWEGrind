@@ -1,5 +1,66 @@
 @import "tailwindcss";
 
+/* ---- Theme ------------------------------------------------------------
+   Three states: no class on <html> follows the system, .light/.dark force
+   one (set by ThemeToggle, persisted in localStorage, applied pre-paint by
+   the inline script in app/layout.tsx). Tailwind v4 utilities resolve
+   through var(--color-*), so redefining the tokens with light-dark()
+   themes the entire app; the light values are byte-for-byte what Tailwind
+   compiled, so light mode is unchanged. The dark palette is a low-contrast
+   charcoal (near-black ground, cards barely lighter, muted borders, soft
+   off-white text, desaturated accents). These rules are deliberately
+   un-layered so they beat @layer theme. */
+:root { color-scheme: light dark; }
+:root.light { color-scheme: light; }
+:root.dark { color-scheme: dark; }
+
+:root {
+  /* neutrals: page bg, cards, fills, borders, text */
+  --color-white: light-dark(#fff, #1e1e21);
+  --color-zinc-50: light-dark(#fafafa, #161618);
+  --color-zinc-100: light-dark(#f4f4f5, #26262a);
+  --color-zinc-200: light-dark(#e4e4e7, #2e2e33);
+  --color-zinc-300: light-dark(#d4d4d8, #3d3d44);
+  --color-zinc-400: light-dark(#9f9fa9, #8a8a93);
+  --color-zinc-500: light-dark(#71717b, #a5a5ae);
+  --color-zinc-600: light-dark(#52525c, #c4c4cc);
+  --color-zinc-700: light-dark(#3f3f46, #dadade);
+  --color-zinc-900: light-dark(#18181b, #ececef);
+  /* status + accent hues: light tint bg / dark text flips to
+     dark tint bg / light text */
+  --color-amber-50: light-dark(#fffbeb, #2b2310);
+  --color-amber-100: light-dark(#fef3c6, #352a12);
+  --color-amber-200: light-dark(#fee685, #52411c);
+  --color-amber-600: light-dark(#dd7400, #e0a458);
+  --color-amber-700: light-dark(#b75000, #e8b46f);
+  --color-amber-800: light-dark(#953d00, #f2cf9a);
+  --color-blue-50: light-dark(#eff6ff, #182740);
+  --color-blue-700: light-dark(#1447e6, #8ab4ff);
+  --color-emerald-50: light-dark(#ecfdf5, #12291f);
+  --color-emerald-100: light-dark(#d0fae5, #17352a);
+  --color-emerald-200: light-dark(#a4f4cf, #234f3c);
+  --color-emerald-500: light-dark(#00bb7f, #34b184);
+  --color-emerald-600: light-dark(#009767, #4cc79a);
+  --color-emerald-700: light-dark(#007956, #74d8b3);
+  --color-emerald-800: light-dark(#005f46, #a1e8cb);
+  --color-red-50: light-dark(#fef2f2, #341a1c);
+  --color-red-200: light-dark(#ffcaca, #5c2b2c);
+  --color-red-500: light-dark(#fb2c36, #ee7a75);
+  --color-red-600: light-dark(#e40014, #f19390);
+  --color-rose-100: light-dark(#ffe4e6, #3c1e29);
+  --color-rose-800: light-dark(#a30037, #f4a0b5);
+  --color-sky-50: light-dark(#f0f9ff, #14283a);
+  --color-sky-100: light-dark(#dff2fe, #1a3549);
+  --color-sky-700: light-dark(#0069a4, #74c4ec);
+  --color-sky-800: light-dark(#005986, #a2d8f4);
+  --color-slate-200: light-dark(#e2e8f0, #30343b);
+  --color-slate-700: light-dark(#314158, #c7d0dc);
+  --color-violet-100: light-dark(#ede9fe, #2c2452);
+  --color-violet-600: light-dark(#7f22fe, #ab97fb);
+  --color-violet-700: light-dark(#7008e7, #bda9fc);
+  --color-violet-800: light-dark(#5d0ec0, #cebdfd);
+}
+
 body {
   font-family:
     ui-sans-serif,
@@ -31,24 +92,25 @@ body {
 .prose-note ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
 .prose-note ol { list-style: decimal; padding-left: 1.25rem; margin: 0.5rem 0; }
 .prose-note code {
-  background: #f4f4f5;
+  background: var(--color-zinc-100);
   border-radius: 4px;
   padding: 0.1rem 0.3rem;
   font-size: 0.85em;
 }
 .prose-note pre {
-  background: #18181b;
-  color: #e4e4e7;
+  /* Dark block in both themes; a shade darker than cards in dark mode. */
+  background: light-dark(#18181b, #101013);
+  color: light-dark(#e4e4e7, #d6d6db);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   overflow-x: auto;
   margin: 0.75rem 0;
 }
 .prose-note pre code { background: transparent; padding: 0; color: inherit; }
-.prose-note a { color: #1d4ed8; text-decoration: underline; }
+.prose-note a { color: var(--color-blue-700); text-decoration: underline; }
 .prose-note blockquote {
-  border-left: 3px solid #d4d4d8;
+  border-left: 3px solid var(--color-zinc-300);
   padding-left: 0.75rem;
-  color: #52525b;
+  color: var(--color-zinc-600);
   margin: 0.5rem 0;
 }

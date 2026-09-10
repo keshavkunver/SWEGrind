@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/lib/auth-actions";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Nav renders three ways: a sidebar on desktop, and on mobile a sticky
 // top bar (brand + sign out) plus a fixed bottom tab bar for thumb reach.
@@ -89,14 +90,17 @@ export function Sidebar({ email }: { email?: string }) {
         <Link href="/" className="font-bold tracking-tight">
           SWE&nbsp;Grind
         </Link>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="rounded-md px-3 py-2.5 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-500"
-          >
-            Sign out
-          </button>
-        </form>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="rounded-md px-3 py-2.5 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-500"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
       </header>
 
       {/* Desktop: sidebar */}
@@ -122,6 +126,9 @@ export function Sidebar({ email }: { email?: string }) {
           </Link>
         ))}
         <div className="mt-auto pt-4">
+          <div className="mb-1 px-1">
+            <ThemeToggle />
+          </div>
           <form action={signOut} className="flex items-center gap-2 px-3">
             {email && (
               <span
