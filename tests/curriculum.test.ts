@@ -140,6 +140,34 @@ describe("seed data integrity", () => {
     }
   });
 
+  it("every study task carries at least one learning link (follow-the-link rule)", () => {
+    // Engineering, AIEngineering, and SystemDesign study sessions must be
+    // doable without hunting for resources: click the link, learn. Project
+    // and Career tasks are the learner's own work; InterviewPrep practice
+    // sessions draw on the pattern pages.
+    const needsLinks = new Set(["Engineering", "AIEngineering", "SystemDesign"]);
+    for (const [week, tasks] of Object.entries(WEEK_TASKS)) {
+      for (const t of tasks) {
+        if (!needsLinks.has(t.category)) continue;
+        expect(
+          (t.links ?? []).length,
+          `week ${week} "${t.title}" has no learning links`
+        ).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("task links have labels and https URLs", () => {
+    for (const tasks of Object.values(WEEK_TASKS)) {
+      for (const t of tasks) {
+        for (const link of t.links ?? []) {
+          expect(link.label.trim().length, link.url).toBeGreaterThan(0);
+          expect(link.url).toMatch(/^https:\/\//);
+        }
+      }
+    }
+  });
+
   it("resources have unique titles and valid URLs", () => {
     const titles = RESOURCES.map(([title]) => title);
     expect(new Set(titles).size).toBe(titles.length);
@@ -157,7 +185,12 @@ describe("seed data integrity", () => {
         ...c.links.map((l) => l.label),
       ]),
       ...Object.values(WEEK_TASKS).flatMap((tasks) =>
-        tasks.map((t) => `${t.title} ${t.description ?? ""}`)
+        tasks.map(
+          (t) =>
+            `${t.title} ${t.description ?? ""} ${(t.links ?? [])
+              .map((l) => l.label)
+              .join(" ")}`
+        )
       ),
       ...UMPIRE_STEPS.map((s) => `${s.name} ${s.detail}`),
       ...STAR_STEPS.map((s) => `${s.name} ${s.detail}`),

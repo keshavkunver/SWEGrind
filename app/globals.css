@@ -61,6 +61,13 @@
   --color-violet-800: light-dark(#5d0ec0, #cebdfd);
 }
 
+/* Used by app/loading.tsx: delays the spinner so quick navigations never
+   flash it. */
+@keyframes loading-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 body {
   font-family:
     ui-sans-serif,

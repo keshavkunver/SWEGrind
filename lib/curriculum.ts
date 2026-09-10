@@ -424,6 +424,34 @@ const umpireGuide = {
   url: "https://guides.codepath.org/compsci/UMPIRE-Interview-Strategy",
 };
 
+// Shared engineering / system design resources referenced by several tasks.
+// Every URL here was verified live before being added; keep it that way
+// when editing (curl each new link).
+const helloCore = {
+  label: "Hello Interview: Core concepts",
+  url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/core-concepts",
+};
+const helloPractice = {
+  label: "Hello Interview: Practice",
+  url: "https://www.hellointerview.com/practice",
+};
+const awsQueues = {
+  label: "AWS: What is a message queue?",
+  url: "https://aws.amazon.com/message-queue/",
+};
+const awsRetries = {
+  label: "AWS: Retries and backoff with jitter",
+  url: "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/",
+};
+const effectiveAgents = {
+  label: "Anthropic: Building Effective Agents",
+  url: "https://www.anthropic.com/research/building-effective-agents",
+};
+const hamelEvals = {
+  label: "Hamel: Your AI product needs evals",
+  url: "https://hamel.dev/blog/posts/evals/",
+};
+
 // Pattern-study sessions follow the core loop: understand the data
 // structure, learn the pattern and its recognition signals from a
 // pattern-oriented lesson (Grokking's role: pattern teacher), trace a
@@ -436,72 +464,72 @@ const patternStudy = (day: number, title: string, estMinutes = 90): SeedTask => 
   category: "InterviewPrep",
   estMinutes,
   description:
-    "Learn the pattern before the problems: why it works, recognition signals, the implementation template. Then work the pattern page's four problem slots in order.",
+    "Spend the first 30 minutes learning the pattern in Grokking: why it works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.",
   links: [grokking, neetcode],
 });
 
 export const WEEK_TASKS: Record<number, SeedTask[]> = {
   1: [
     patternStudy(1, "Hash maps / sets pattern"),
-    { day: 1, title: "JavaScript diagnostic", category: "Engineering", estMinutes: 60, description: "Assess current JS strength; study the weaknesses rather than relearning everything.", links: [{ label: "MDN JS Guide", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" }] },
-    { day: 2, title: "Two pointers pattern", category: "InterviewPrep", estMinutes: 90, description: "Learn the pattern before the problems: why it works, recognition signals, the implementation template. Then work the pattern page's four problem slots in order.", links: [grokking, neetcode] },
-    { day: 2, title: "React fundamentals", category: "Engineering", estMinutes: 120, description: "Includes HTML/CSS and responsive UI foundations as needed.", links: [{ label: "react.dev", url: "https://react.dev/learn" }] },
-    { day: 3, title: "The UMPIRE method", category: "InterviewPrep", estMinutes: 45, description: "Understand, Match, Plan, Implement, Review, Evaluate: the standard way to work every coding problem from now on.", links: [umpireGuide] },
-    { day: 3, title: "TypeScript fundamentals", category: "Engineering", estMinutes: 120, links: [{ label: "TS Handbook", url: "https://www.typescriptlang.org/docs/handbook/intro.html" }] },
-    { day: 4, title: "Claude Code workflow", category: "AIEngineering", estMinutes: 90, description: "Practice the Explore, Plan, Implement, Test, Review loop. In learning mode AI tutors and explains; never let it replace foundational understanding.", links: [{ label: "Claude Code docs", url: "https://docs.anthropic.com/en/docs/claude-code" }] },
-    { day: 5, title: "Begin the sliding window pattern", category: "InterviewPrep", estMinutes: 60, description: "First look: what a window is, when a contiguous-range constraint signals the pattern. Full study session next week.", links: [grokking] },
-    { day: 5, title: "System design interview framework", category: "SystemDesign", estMinutes: 90, description: "Requirements, core entities, API, data flow, high-level design, deep dives.", links: [{ label: "Hello Interview", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction" }] },
+    { day: 1, title: "JavaScript diagnostic", category: "Engineering", estMinutes: 60, description: "Spend 40 minutes working the MDN skill tests cold, in order, and write down every exercise you cannot finish. Spend the last 20 minutes on your weakest topic in javascript.info; keep the miss list and clear it during the week.", links: [{ label: "MDN: Test your skills (the diagnostic)", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills" }, { label: "javascript.info (fill the gaps)", url: "https://javascript.info" }] },
+    { day: 2, title: "Two pointers pattern", category: "InterviewPrep", estMinutes: 90, description: "Spend the first 30 minutes learning the pattern in Grokking: why it works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.", links: [grokking, neetcode] },
+    { day: 2, title: "React fundamentals", category: "Engineering", estMinutes: 120, description: "Pick one path and finish it: either work react.dev Learn from Describing the UI through Adding Interactivity, doing every challenge, or code along with the React 19 course video (2 hr). Same ground either way; do not do both today.", links: [{ label: "react.dev Learn (do the challenges)", url: "https://react.dev/learn" }, { label: "React 19 Course (video, 2 hr)", url: "https://www.youtube.com/watch?v=dCLhUialKPQ" }] },
+    { day: 3, title: "The UMPIRE method", category: "InterviewPrep", estMinutes: 45, description: "Read the guide once, then write the six steps from memory: Understand, Match, Plan, Implement, Review, Evaluate. Run them end to end on one easy problem you have already solved. Keep the steps next to you for every problem from now on.", links: [umpireGuide] },
+    { day: 3, title: "TypeScript fundamentals", category: "Engineering", estMinutes: 120, description: "Work the Beginner's TypeScript exercises in order, attempting each one before revealing the solution. When a compiler error stumps you, look it up in the handbook before moving on.", links: [{ label: "Beginner's TypeScript (interactive)", url: "https://www.totaltypescript.com/tutorials/beginners-typescript" }, { label: "TS Handbook", url: "https://www.typescriptlang.org/docs/handbook/intro.html" }] },
+    { day: 4, title: "Claude Code workflow", category: "AIEngineering", estMinutes: 90, description: "Run one full loop on a small repo: explore the code, plan a change, implement it, test it, review the diff. Make it explain anything you could not have written yourself; it tutors, it does not replace understanding.", links: [{ label: "Claude Code docs", url: "https://docs.anthropic.com/en/docs/claude-code" }] },
+    { day: 5, title: "Begin the sliding window pattern", category: "InterviewPrep", estMinutes: 60, description: "Read Grokking's sliding window intro and trace two worked examples on paper, writing the window bounds at each step. Full study session next week.", links: [grokking] },
+    { day: 5, title: "System design interview framework", category: "SystemDesign", estMinutes: 90, description: "Read the framework end to end, then write its steps from memory: requirements, core entities, API, data flow, high-level design, deep dives. Repeat until you can produce the list cold; it runs every design session from here.", links: [{ label: "Hello Interview", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction" }] },
     { day: 6, title: "Begin targeted job applications", category: "Career", estMinutes: 60, description: "Resume, LinkedIn, GitHub, application tracker, real reference jobs. Target 5 to 8 tailored applications this week; applications start now, not in week 8." },
   ],
   2: [
     patternStudy(1, "Sliding window pattern"),
-    { day: 1, title: "React depth", category: "Engineering", estMinutes: 120, description: "Hooks in depth, state patterns, composition." },
+    { day: 1, title: "React depth", category: "Engineering", estMinutes: 120, description: "Hooks in depth, state patterns, composition. Work the two react.dev sections in order; do the challenges, not just the reading.", links: [{ label: "react.dev: Managing State", url: "https://react.dev/learn/managing-state" }, { label: "react.dev: Escape Hatches", url: "https://react.dev/learn/escape-hatches" }] },
     patternStudy(2, "Fast and slow pointers pattern"),
     { day: 2, title: "Next.js fundamentals", category: "Engineering", estMinutes: 120, links: [{ label: "Next.js Learn", url: "https://nextjs.org/learn" }] },
     patternStudy(3, "Stack pattern"),
     patternStudy(4, "Monotonic stack pattern"),
     { day: 4, title: "LLM API fundamentals", category: "AIEngineering", estMinutes: 90, links: [{ label: "Anthropic docs", url: "https://docs.anthropic.com/" }] },
     patternStudy(5, "Modified binary search pattern"),
-    { day: 5, title: "Structured outputs", category: "AIEngineering", estMinutes: 90 },
-    { day: 6, title: "Networking / API fundamentals", category: "SystemDesign", estMinutes: 90 },
+    { day: 5, title: "Structured outputs", category: "AIEngineering", estMinutes: 90, description: "Get the model returning validated JSON reliably: schemas, tool-shaped outputs, handling refusals and malformed output.", links: [{ label: "Anthropic: Structured outputs", url: "https://docs.anthropic.com/en/docs/build-with-claude/structured-outputs" }] },
+    { day: 6, title: "Networking / API fundamentals", category: "SystemDesign", estMinutes: 90, links: [{ label: "MDN: HTTP overview", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" }, helloCore] },
   ],
   3: [
     patternStudy(1, "In-place linked list reversal pattern"),
-    { day: 1, title: "PostgreSQL setup and basics", category: "Engineering", estMinutes: 90 },
+    { day: 1, title: "PostgreSQL setup and basics", category: "Engineering", estMinutes: 90, description: "Get a database running locally and talk to it from code. The Prisma quickstart mirrors the Life Companion stack.", links: [{ label: "PostgreSQL tutorial", url: "https://www.postgresql.org/docs/current/tutorial.html" }, { label: "Prisma + Postgres quickstart", url: "https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql" }] },
     patternStudy(2, "Merge intervals pattern"),
-    { day: 2, title: "SQL practice", category: "Engineering", estMinutes: 90 },
+    { day: 2, title: "SQL practice", category: "Engineering", estMinutes: 90, description: "Interactive drills, no setup: SQLBolt for the core, then PostgreSQL Exercises until joins and aggregates feel automatic.", links: [{ label: "SQLBolt (interactive)", url: "https://sqlbolt.com" }, { label: "PostgreSQL Exercises", url: "https://pgexercises.com" }] },
     patternStudy(3, "Tree DFS pattern"),
-    { day: 3, title: "Data modeling", category: "Engineering", estMinutes: 90 },
+    { day: 3, title: "Data modeling", category: "Engineering", estMinutes: 90, description: "Tables, relations, constraints, normalization enough to be dangerous. Sketch the Life Companion schema as the exercise.", links: [{ label: "Prisma: Data modeling", url: "https://www.prisma.io/docs/orm/prisma-schema/data-model/models" }, { label: "Prisma Data Guide", url: "https://www.prisma.io/dataguide" }] },
     patternStudy(4, "Tree BFS pattern"),
-    { day: 4, title: "Authentication", category: "Engineering", estMinutes: 120 },
-    { day: 5, title: "API design and building", category: "Engineering", estMinutes: 90 },
+    { day: 4, title: "Authentication", category: "Engineering", estMinutes: 120, description: "Sessions vs tokens, password handling, OAuth shape. The Copenhagen Book is the concepts; Supabase Auth is the implementation you will actually use.", links: [{ label: "The Copenhagen Book", url: "https://thecopenhagenbook.com" }, { label: "Supabase Auth docs", url: "https://supabase.com/docs/guides/auth" }] },
+    { day: 5, title: "API design and building", category: "Engineering", estMinutes: 90, description: "Design first (resources, verbs, status codes, errors), then build a couple of real endpoints with Next.js route handlers.", links: [helloCore, { label: "Next.js: Route Handlers", url: "https://nextjs.org/docs/app/building-your-application/routing/route-handlers" }] },
     { day: 5, title: "Life Companion: full-stack foundation", category: "Project", estMinutes: 180 },
     { day: 5, title: "Begin the STAR story bank", category: "Career", estMinutes: 45, description: "Draft STAR + Learning stories: a hard technical problem, a conflict, ownership, a failure. Keep adding one story per week from here." },
     { day: 6, title: "Life Companion: basic AI integration", category: "Project", estMinutes: 120 },
   ],
   4: [
     patternStudy(1, "Top-K / heap pattern"),
-    { day: 2, title: "Testing", category: "Engineering", estMinutes: 120 },
+    { day: 2, title: "Testing", category: "Engineering", estMinutes: 120, description: "Vitest for units, Testing Library for components. Write real tests against Life Companion code, not toy examples.", links: [{ label: "Vitest guide", url: "https://vitest.dev/guide/" }, { label: "Testing Library: queries", url: "https://testing-library.com/docs/queries/about/" }] },
     patternStudy(2, "Graph BFS / DFS pattern"),
-    { day: 3, title: "CI/CD", category: "Engineering", estMinutes: 90 },
+    { day: 3, title: "CI/CD", category: "Engineering", estMinutes: 90, description: "Follow the quickstart, then wire a real workflow on Life Companion: lint + tests on every push.", links: [{ label: "GitHub Actions quickstart", url: "https://docs.github.com/en/actions/quickstart" }] },
     patternStudy(3, "Matrix / islands pattern"),
     { day: 4, title: "Docker", category: "Engineering", estMinutes: 120, description: "Dockerfile, image vs container, ports, env vars, volumes, Compose. Target: use it independently on Life Companion.", links: [{ label: "Docker Get Started", url: "https://docs.docker.com/get-started/" }] },
-    { day: 5, title: "Tool calling", category: "AIEngineering", estMinutes: 90 },
-    { day: 5, title: "Prompt and workflow design", category: "AIEngineering", estMinutes: 90, description: "Deterministic workflows and prompt chains before agents: application code controls the sequence unless the model genuinely needs to." },
+    { day: 5, title: "Tool calling", category: "AIEngineering", estMinutes: 90, description: "Define tools, let the model call them, handle results and errors. Build one working tool loop end to end.", links: [{ label: "Anthropic: Tool use", url: "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" }] },
+    { day: 5, title: "Prompt and workflow design", category: "AIEngineering", estMinutes: 90, description: "Deterministic workflows and prompt chains before agents: application code controls the sequence unless the model genuinely needs to.", links: [effectiveAgents, { label: "Anthropic: Prompt engineering", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" }] },
     { day: 6, title: "Life Companion: full-stack V1 deployment", category: "Project", estMinutes: 180 },
   ],
   5: [
     patternStudy(1, "Topological sort pattern"),
     patternStudy(2, "Union find pattern"),
     patternStudy(3, "Subsets pattern"),
-    { day: 3, title: "Retrieval", category: "AIEngineering", estMinutes: 90 },
+    { day: 3, title: "Retrieval", category: "AIEngineering", estMinutes: 90, description: "Embeddings, vector search, similarity. Supabase pgvector is the stack Life Companion will use.", links: [{ label: "Pinecone: What is a vector DB", url: "https://www.pinecone.io/learn/vector-database/" }, { label: "Supabase: AI & Vectors", url: "https://supabase.com/docs/guides/ai" }] },
     patternStudy(4, "Backtracking pattern"),
-    { day: 4, title: "RAG", category: "AIEngineering", estMinutes: 120 },
+    { day: 4, title: "RAG", category: "AIEngineering", estMinutes: 120, description: "Chunking, retrieval, grounding, citations, and where naive RAG falls over.", links: [{ label: "Pinecone: RAG explained", url: "https://www.pinecone.io/learn/retrieval-augmented-generation/" }, { label: "Anthropic: Contextual retrieval", url: "https://www.anthropic.com/news/contextual-retrieval" }] },
     { day: 5, title: "Mixed problems: identify the pattern yourself", category: "InterviewPrep", estMinutes: 60, description: "Unlabeled problems from earlier patterns. Use UMPIRE's Match step to identify the pattern before solving." },
-    { day: 5, title: "Context engineering", category: "AIEngineering", estMinutes: 90 },
+    { day: 5, title: "Context engineering", category: "AIEngineering", estMinutes: 90, description: "What goes in the window and why: system prompts, retrieved context, history compaction, token budgets.", links: [{ label: "Anthropic: Context engineering", url: "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" }] },
     { day: 5, title: "Life Companion: calendar / tool integration", category: "Project", estMinutes: 150 },
-    { day: 6, title: "Async and background jobs", category: "Engineering", estMinutes: 90 },
-    { day: 6, title: "Scaling concepts", category: "SystemDesign", estMinutes: 90 },
+    { day: 6, title: "Async and background jobs", category: "Engineering", estMinutes: 90, description: "Why work leaves the request cycle: queues, workers, retries, idempotency. Inngest is the serverless-friendly implementation path.", links: [awsQueues, { label: "Inngest docs", url: "https://www.inngest.com/docs" }] },
+    { day: 6, title: "Scaling concepts", category: "SystemDesign", estMinutes: 90, description: "The classic lecture still holds up: vertical vs horizontal, load balancing, caching, replication.", links: [{ label: "Harvard CS75: Scalability (video)", url: "https://www.youtube.com/watch?v=-W9F__D3oY4" }, helloCore] },
   ],
   6: [
     patternStudy(1, "Trie pattern"),
@@ -509,28 +537,28 @@ export const WEEK_TASKS: Record<number, SeedTask[]> = {
     { day: 3, title: "1-D dynamic programming pattern", category: "InterviewPrep", estMinutes: 120, description: "Learn the pattern before the problems: why it works, recognition signals, the implementation template. Then work the pattern page's four problem slots in order.", links: [grokking, neetcode] },
     { day: 3, title: "MCP", category: "AIEngineering", estMinutes: 90, links: [{ label: "MCP docs", url: "https://modelcontextprotocol.io/" }] },
     { day: 4, title: "Begin 2-D dynamic programming", category: "InterviewPrep", estMinutes: 90, description: "Grid and two-sequence DP tables. Finishes next week.", links: [grokking] },
-    { day: 4, title: "Agent workflows", category: "AIEngineering", estMinutes: 120, description: "Goal, choose action, tool, observe, decide, finish. Iteration limits, permissions, human approval, failure recovery." },
-    { day: 5, title: "Python for AI engineering", category: "Engineering", estMinutes: 120, description: "Practical Python only: syntax differences, lists/dicts/sets, classes, async basics, SDK usage. Not a giant Python course." },
-    { day: 6, title: "Reliability", category: "Engineering", estMinutes: 90 },
-    { day: 6, title: "Queues, workers, and storage", category: "SystemDesign", estMinutes: 90 },
+    { day: 4, title: "Agent workflows", category: "AIEngineering", estMinutes: 120, description: "Goal, choose action, tool, observe, decide, finish. Iteration limits, permissions, human approval, failure recovery.", links: [effectiveAgents] },
+    { day: 5, title: "Python for AI engineering", category: "Engineering", estMinutes: 120, description: "Practical Python only: syntax differences, lists/dicts/sets, classes, async basics, SDK usage. Not a giant Python course.", links: [{ label: "Learn X in Y minutes: Python", url: "https://learnxinyminutes.com/docs/python/" }, { label: "Official Python tutorial", url: "https://docs.python.org/3/tutorial/" }] },
+    { day: 6, title: "Reliability", category: "Engineering", estMinutes: 90, description: "Timeouts, retries with backoff and jitter, idempotency keys, graceful degradation. The AWS article is the core reading.", links: [awsRetries, { label: "Google SRE book", url: "https://sre.google/sre-book/table-of-contents/" }] },
+    { day: 6, title: "Queues, workers, and storage", category: "SystemDesign", estMinutes: 90, links: [{ label: "Hello Interview: Key technologies", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/key-technologies" }, awsQueues] },
   ],
   7: [
     { day: 1, title: "Complete 2-D dynamic programming", category: "InterviewPrep", estMinutes: 120, description: "All 22 patterns have now been introduced. Do not sacrifice interview-quality practice to finish all 88 problems.", links: [grokking, neetcode] },
     { day: 1, title: "Mixed timed interview practice", category: "InterviewPrep", estMinutes: 120, description: "Timed mediums, unseen problems, no pattern labels. Follow UMPIRE aloud." },
     { day: 3, title: "Mixed timed interview practice", category: "InterviewPrep", estMinutes: 120, description: "Timed mediums, unseen problems, no pattern labels. Follow UMPIRE aloud." },
-    { day: 2, title: "Evals", category: "AIEngineering", estMinutes: 120, description: "Build the Life Companion eval dataset: grounding, retrieval accuracy, tool selection, task success, tone, latency, cost." },
-    { day: 4, title: "AI quality feedback loops", category: "AIEngineering", estMinutes: 90 },
-    { day: 5, title: "Observability", category: "Engineering", estMinutes: 90 },
+    { day: 2, title: "Evals", category: "AIEngineering", estMinutes: 120, description: "Build the Life Companion eval dataset: grounding, retrieval accuracy, tool selection, task success, tone, latency, cost.", links: [{ label: "Anthropic: Define success and tests", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/develop-tests" }, hamelEvals] },
+    { day: 4, title: "AI quality feedback loops", category: "AIEngineering", estMinutes: 90, description: "Turn eval results and production failures into fixes: error analysis, regression sets, the improve-measure loop.", links: [hamelEvals] },
+    { day: 5, title: "Observability", category: "Engineering", estMinutes: 90, description: "Logs, metrics, traces, and what each is for. Wire real logging into Life Companion while it is fresh.", links: [{ label: "OpenTelemetry: Observability primer", url: "https://opentelemetry.io/docs/concepts/observability-primer/" }, { label: "Grafana fundamentals", url: "https://grafana.com/docs/grafana/latest/fundamentals/" }] },
     { day: 5, title: "Life Companion: UX polish", category: "Project", estMinutes: 120 },
-    { day: 6, title: "System design practice interviews", category: "SystemDesign", estMinutes: 120 },
+    { day: 6, title: "System design practice interviews", category: "SystemDesign", estMinutes: 120, links: [helloPractice] },
   ],
   8: [
     { day: 1, title: "Coding mocks", category: "InterviewPrep", estMinutes: 120, description: "Unseen timed problems, weak-pattern review, spaced re-solves. Simulate the real thing: UMPIRE aloud, no assistance." },
-    { day: 2, title: "System design mocks", category: "SystemDesign", estMinutes: 120 },
+    { day: 2, title: "System design mocks", category: "SystemDesign", estMinutes: 120, links: [helloPractice] },
     { day: 3, title: "Behavioral prep", category: "Career", estMinutes: 90, description: "Rehearse the STAR + Learning story bank out loud; one story per category, tightened to two minutes each." },
-    { day: 3, title: "Verification and retries", category: "AIEngineering", estMinutes: 90 },
-    { day: 4, title: "AI safety and reliability", category: "AIEngineering", estMinutes: 90 },
-    { day: 4, title: "Latency and cost analysis", category: "AIEngineering", estMinutes: 60 },
+    { day: 3, title: "Verification and retries", category: "AIEngineering", estMinutes: 90, description: "Check model output before acting on it; retry with feedback when it fails. Same backoff discipline as any other unreliable dependency.", links: [effectiveAgents, awsRetries] },
+    { day: 4, title: "AI safety and reliability", category: "AIEngineering", estMinutes: 90, description: "Prompt injection, data leakage, excessive agency: know the top risks and what mitigations exist.", links: [{ label: "OWASP LLM Top 10", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" }] },
+    { day: 4, title: "Latency and cost analysis", category: "AIEngineering", estMinutes: 60, description: "Price out Life Companion per user per day; find the two biggest token sinks and cut them with caching.", links: [{ label: "Anthropic: Pricing", url: "https://docs.anthropic.com/en/docs/about-claude/pricing" }, { label: "Anthropic: Prompt caching", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" }] },
     { day: 5, title: "Docker / Kubernetes review", category: "Engineering", estMinutes: 90, description: "K8s conceptually only: cluster, node, pod, deployment, service, ingress, ConfigMap/Secret, replicas, health checks, autoscaling. One simple deployment if practical.", links: [{ label: "Kubernetes Basics", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics/" }] },
     { day: 5, title: "Life Companion: deployment", category: "Project", estMinutes: 120, description: "Feature freeze. Polish, reliability, README, architecture diagram, demo, case study." },
     { day: 6, title: "Portfolio and case-study polish", category: "Career", estMinutes: 120 },

@@ -9,6 +9,9 @@ export default function LoginPage() {
     null
   );
   const [showPassword, setShowPassword] = useState(false);
+  // Which submit button was last clicked, so the pending message matches
+  // the action actually running (click fires before form submission).
+  const [intent, setIntent] = useState<"signin" | "signup">("signin");
 
   const error = state?.error;
   const message = state?.message;
@@ -109,6 +112,7 @@ export default function LoginPage() {
               name="intent"
               value="signin"
               disabled={pending}
+              onClick={() => setIntent("signin")}
               className="flex-1 rounded-md bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
             >
               Sign in
@@ -118,11 +122,43 @@ export default function LoginPage() {
               name="intent"
               value="signup"
               disabled={pending}
+              onClick={() => setIntent("signup")}
               className="flex-1 rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-100 disabled:opacity-50"
             >
               Create account
             </button>
           </div>
+          {pending && (
+            <p
+              aria-live="polite"
+              className="mt-2 flex items-center gap-2 text-xs text-zinc-500"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+                className="h-3.5 w-3.5 animate-spin"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  className="opacity-25"
+                />
+                <path
+                  d="M12 2a10 10 0 0 1 10 10"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+              {intent === "signup"
+                ? "Creating your account, one moment"
+                : "Signing you in, one moment"}
+            </p>
+          )}
         </form>
       </div>
     </div>

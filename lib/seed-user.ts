@@ -262,9 +262,63 @@ async function syncCurriculum(userId: string) {
   });
 }
 
+// Task CONTENT (links, description, estimate, order, category) is owned by
+// WEEK_TASKS in lib/curriculum.ts; the learner owns only status and notes.
+// Seeding copies content once and skipDuplicates never revisits it, so
+// without this, content improvements (like adding learning links) would
+// reach only brand-new accounts. Re-copies any drifted row, matched by the
+// same userId|week|day|title identity the unique constraint uses.
+async function refreshTaskContent(userId: string) {
+  const desired = new Map(
+    Object.entries(WEEK_TASKS).flatMap(([week, tasks]) =>
+      tasks.map(
+        (t, i) =>
+          [
+            `${week}|${t.day}|${t.title}`,
+            {
+              order: i,
+              category: t.category,
+              estMinutes: t.estMinutes ?? null,
+              description: t.description ?? "",
+              links: JSON.stringify(t.links ?? []),
+            },
+          ] as const
+      )
+    )
+  );
+  const rows = await db.task.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      week: true,
+      day: true,
+      title: true,
+      order: true,
+      category: true,
+      estMinutes: true,
+      description: true,
+      links: true,
+    },
+  });
+  for (const row of rows) {
+    const want = desired.get(`${row.week}|${row.day}|${row.title}`);
+    if (!want) continue;
+    if (
+      want.order !== row.order ||
+      want.category !== row.category ||
+      want.estMinutes !== row.estMinutes ||
+      want.description !== row.description ||
+      want.links !== row.links
+    ) {
+      await db.task.update({ where: { id: row.id }, data: want });
+    }
+  }
+}
+
 export async function ensureSeeded(userId: string) {
   const patternCount = await db.pattern.count({ where: { userId } });
   if (patternCount === 0) {
+    // Fresh seed copies current content; no refresh needed.
     await seedUser(userId);
     return;
   }
@@ -273,4 +327,5 @@ export async function ensureSeeded(userId: string) {
   if (patternCount !== PATTERNS.length) {
     await syncCurriculum(userId);
   }
+  await refreshTaskContent(userId);
 }
