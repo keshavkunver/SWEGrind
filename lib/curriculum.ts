@@ -77,6 +77,7 @@ export const RESOURCES: [string, string, string, string, string][] = [
   ["PostgreSQL docs", "https://www.postgresql.org/docs/current/tutorial.html", "docs", "Databases", "Official PostgreSQL tutorial"],
   ["Missing Semester", "https://missing.csail.mit.edu/", "course", "Tooling", "MIT's course on shell, git, and dev tooling"],
   ["Hello Interview", "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction", "practice", "System Design", "System Design in a Hurry: the primary system design spine"],
+  ["System Design Primer", "https://github.com/donnemartin/system-design-primer", "docs", "System Design", "Free deep-dive reference with diagrams for every major component. Dip in per topic after Hello Interview; never attempt completion"],
   ["NeetCode", "https://neetcode.io/roadmap", "practice", "Interview Prep", "The primary problem bank. Practice patterns here after learning them, not before"],
   ["AlgoMaster DSA patterns", "https://algomaster.io/practice/dsa-patterns", "practice", "Interview Prep", "Free visual pattern hub. Each day's pattern task links its own short video; this is the browseable index"],
   ["Coding Interview University", "https://github.com/jwasham/coding-interview-university", "docs", "Interview Prep", "Supplemental CS and data structure reference. Dip in when a concept is shaky; never attempt completion"],
