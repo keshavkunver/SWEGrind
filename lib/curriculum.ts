@@ -78,7 +78,7 @@ export const RESOURCES: [string, string, string, string, string][] = [
   ["Missing Semester", "https://missing.csail.mit.edu/", "course", "Tooling", "MIT's course on shell, git, and dev tooling"],
   ["Hello Interview", "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction", "practice", "System Design", "System Design in a Hurry: the primary system design spine"],
   ["NeetCode", "https://neetcode.io/roadmap", "practice", "Interview Prep", "The primary problem bank. Practice patterns here after learning them, not before"],
-  ["Grokking the Coding Interview", "https://www.designgurus.io/course/grokking-the-coding-interview", "course", "Interview Prep", "The pattern teacher. Use relevant pattern lessons selectively, not end to end"],
+  ["AlgoMaster DSA patterns", "https://algomaster.io/practice/dsa-patterns", "practice", "Interview Prep", "Free visual pattern hub. Each day's pattern task links its own short video; this is the browseable index"],
   ["Coding Interview University", "https://github.com/jwasham/coding-interview-university", "docs", "Interview Prep", "Supplemental CS and data structure reference. Dip in when a concept is shaky; never attempt completion"],
   ["UMPIRE interview strategy", "https://guides.codepath.org/compsci/UMPIRE-Interview-Strategy", "docs", "Interview Prep", "CodePath's guide to the UMPIRE technical interview method"],
   ["MDN JavaScript Guide", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide", "docs", "JavaScript", "The JavaScript reference for closing diagnostic gaps"],
@@ -415,10 +415,35 @@ export type SeedTask = {
 
 const neetcode = { label: "NeetCode", url: "https://neetcode.io/roadmap" };
 
-const grokking = {
-  label: "Grokking",
-  url: "https://www.designgurus.io/course/grokking-the-coding-interview",
+// Free visual pattern lessons: one short animated video per pattern,
+// keyed by the pattern-study task title. Replaces the paywalled Grokking
+// course as the pattern teacher; every URL verified live before adding.
+const PATTERN_VISUALS: Record<string, { label: string; url: string }> = {
+  "Hash maps / sets pattern": { label: "Hash tables in 4 min (video)", url: "https://www.youtube.com/watch?v=knV86FlSXJ8" },
+  "Two pointers pattern": { label: "Two Pointers in 7 min (video)", url: "https://www.youtube.com/watch?v=QzZ7nmouLTI" },
+  "Sliding window pattern": { label: "Sliding Window in 7 min (video)", url: "https://www.youtube.com/watch?v=y2d0VHdvfdc" },
+  "Fast and slow pointers pattern": { label: "Fast & Slow Pointers in 6 min (video)", url: "https://www.youtube.com/watch?v=b139yf7Ik-E" },
+  "Stack pattern": { label: "Stack in 7 min (video)", url: "https://www.youtube.com/watch?v=XcaAZ6wNkYM" },
+  "Monotonic stack pattern": { label: "Monotonic Stack in 6 min (video)", url: "https://www.youtube.com/watch?v=DtJVwbbicjQ" },
+  "Modified binary search pattern": { label: "Binary search, 3-step template (video)", url: "https://www.youtube.com/watch?v=iuGwaDVSLi4" },
+  "In-place linked list reversal pattern": { label: "Reverse a list in place (video)", url: "https://www.youtube.com/watch?v=auoTGovuo9A" },
+  "Merge intervals pattern": { label: "Merge intervals pattern (video)", url: "https://www.youtube.com/watch?v=T5t73Fsv1-s" },
+  "Top-K / heap pattern": { label: "Top K Elements in 6 min (video)", url: "https://www.youtube.com/watch?v=6_v6OoxvMOE" },
+  "Tree DFS pattern": { label: "DFS in 4 min (video)", url: "https://www.youtube.com/watch?v=Urx87-NMm6c" },
+  "Tree BFS pattern": { label: "Level order traversal in 2 min (video)", url: "https://www.youtube.com/watch?v=rpPWkRijTh0" },
+  "Graph BFS / DFS pattern": { label: "DFS vs BFS, when to use which (video)", url: "https://www.youtube.com/watch?v=cS-198wtfj0" },
+  "Matrix / islands pattern": { label: "Islands pattern (video)", url: "https://www.youtube.com/watch?v=zXtfMs9YlYI" },
+  "Topological sort pattern": { label: "Topological Sort visualized (video)", url: "https://www.youtube.com/watch?v=7J3GadLzydI" },
+  "Union find pattern": { label: "Union Find in 5 min (video)", url: "https://www.youtube.com/watch?v=ayW5B2W9hfo" },
+  "Subsets pattern": { label: "Subsets decision tree (video)", url: "https://www.youtube.com/watch?v=REOH22Xwdkk" },
+  "Backtracking pattern": { label: "Backtracking, visual intro (video)", url: "https://www.youtube.com/watch?v=Ak-fxEwAR14" },
+  "Trie pattern": { label: "Tries in 5 min (video)", url: "https://www.youtube.com/watch?v=zIjfhVPRZCg" },
+  "Greedy pattern": { label: "Greedy, visually explained (video)", url: "https://www.youtube.com/watch?v=ujHQlfR3qfo" },
+  "1-D dynamic programming pattern": { label: "Mastering DP in 20 min (video)", url: "https://www.youtube.com/watch?v=Hdr64lKQ3e4" },
 };
+// Grid DP taught through the canonical Unique Paths walkthrough; used by
+// both 2-D dynamic programming tasks.
+const dp2dVisual = { label: "Grid DP: Unique Paths (video)", url: "https://www.youtube.com/watch?v=IlEsdxuD4lY" };
 const umpireGuide = {
   label: "UMPIRE guide",
   url: "https://guides.codepath.org/compsci/UMPIRE-Interview-Strategy",
@@ -454,7 +479,7 @@ const hamelEvals = {
 
 // Pattern-study sessions follow the core loop: understand the data
 // structure, learn the pattern and its recognition signals from a
-// pattern-oriented lesson (Grokking's role: pattern teacher), trace a
+// pattern-oriented lesson (the linked video's role: pattern teacher), trace a
 // worked example, then move through the four problem slots on the pattern
 // page (NeetCode's role: problem bank). Never open problems before the
 // pattern makes sense.
@@ -464,20 +489,20 @@ const patternStudy = (day: number, title: string, estMinutes = 90): SeedTask => 
   category: "InterviewPrep",
   estMinutes,
   description:
-    "Spend the first 30 minutes learning the pattern in Grokking: why it works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.",
-  links: [grokking, neetcode],
+    "Spend the first 30 minutes on the linked video and a worked example on paper: why the pattern works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.",
+  links: [PATTERN_VISUALS[title], neetcode].filter(Boolean),
 });
 
 export const WEEK_TASKS: Record<number, SeedTask[]> = {
   1: [
     patternStudy(1, "Hash maps / sets pattern"),
     { day: 1, title: "JavaScript diagnostic", category: "Engineering", estMinutes: 60, description: "Spend 40 minutes working the MDN skill tests cold, in order, and write down every exercise you cannot finish. Spend the last 20 minutes on your weakest topic in javascript.info; keep the miss list and clear it during the week.", links: [{ label: "MDN: Test your skills (the diagnostic)", url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Test_your_skills" }, { label: "javascript.info (fill the gaps)", url: "https://javascript.info" }] },
-    { day: 2, title: "Two pointers pattern", category: "InterviewPrep", estMinutes: 90, description: "Spend the first 30 minutes learning the pattern in Grokking: why it works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.", links: [grokking, neetcode] },
+    { day: 2, title: "Two pointers pattern", category: "InterviewPrep", estMinutes: 90, description: "Spend the first 30 minutes on the linked video and a worked example on paper: why the pattern works, its recognition signals, the implementation template. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.", links: [PATTERN_VISUALS["Two pointers pattern"], neetcode] },
     { day: 2, title: "React fundamentals", category: "Engineering", estMinutes: 120, description: "Pick one path and finish it: either work react.dev Learn from Describing the UI through Adding Interactivity, doing every challenge, or code along with the React 19 course video (2 hr). Same ground either way; do not do both today.", links: [{ label: "react.dev Learn (do the challenges)", url: "https://react.dev/learn" }, { label: "React 19 Course (video, 2 hr)", url: "https://www.youtube.com/watch?v=dCLhUialKPQ" }] },
     { day: 3, title: "The UMPIRE method", category: "InterviewPrep", estMinutes: 45, description: "Read the guide once, then write the six steps from memory: Understand, Match, Plan, Implement, Review, Evaluate. Run them end to end on one easy problem you have already solved. Keep the steps next to you for every problem from now on.", links: [umpireGuide] },
     { day: 3, title: "TypeScript fundamentals", category: "Engineering", estMinutes: 120, description: "Work the Beginner's TypeScript exercises in order, attempting each one before revealing the solution. When a compiler error stumps you, look it up in the handbook before moving on.", links: [{ label: "Beginner's TypeScript (interactive)", url: "https://www.totaltypescript.com/tutorials/beginners-typescript" }, { label: "TS Handbook", url: "https://www.typescriptlang.org/docs/handbook/intro.html" }] },
     { day: 4, title: "Claude Code workflow", category: "AIEngineering", estMinutes: 90, description: "Run one full loop on a small repo: explore the code, plan a change, implement it, test it, review the diff. Make it explain anything you could not have written yourself; it tutors, it does not replace understanding.", links: [{ label: "Claude Code docs", url: "https://code.claude.com/docs" }] },
-    { day: 5, title: "Begin the sliding window pattern", category: "InterviewPrep", estMinutes: 60, description: "Read Grokking's sliding window intro and trace two worked examples on paper, writing the window bounds at each step. Full study session next week.", links: [grokking] },
+    { day: 5, title: "Begin the sliding window pattern", category: "InterviewPrep", estMinutes: 60, description: "Watch the sliding window video, then trace two worked examples on paper, writing the window bounds at each step. Full study session next week.", links: [PATTERN_VISUALS["Sliding window pattern"]] },
     { day: 5, title: "System design interview framework", category: "SystemDesign", estMinutes: 90, description: "Read the framework end to end, then write its steps from memory: requirements, core entities, API, data flow, high-level design, deep dives. Repeat until you can produce the list cold; it runs every design session from here.", links: [{ label: "Hello Interview", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction" }] },
     { day: 6, title: "Begin targeted job applications", category: "Career", estMinutes: 60, description: "Resume, LinkedIn, GitHub, application tracker, real reference jobs. Target 5 to 8 tailored applications this week; applications start now, not in week 8." },
   ],
@@ -534,16 +559,16 @@ export const WEEK_TASKS: Record<number, SeedTask[]> = {
   6: [
     patternStudy(1, "Trie pattern"),
     patternStudy(2, "Greedy pattern"),
-    { day: 3, title: "1-D dynamic programming pattern", category: "InterviewPrep", estMinutes: 120, description: "Learn the pattern before the problems: why it works, recognition signals, the implementation template. Then work the pattern page's four problem slots in order.", links: [grokking, neetcode] },
+    { day: 3, title: "1-D dynamic programming pattern", category: "InterviewPrep", estMinutes: 120, description: "Watch the DP video first (20 minutes), redoing its examples on paper. Then open this pattern's page here and work the four problem slots in order; carry unfinished slots through the week.", links: [PATTERN_VISUALS["1-D dynamic programming pattern"], neetcode] },
     { day: 3, title: "MCP", category: "AIEngineering", estMinutes: 90, description: "Read the intro and architecture pages, then run one existing MCP server against Claude and call its tools. If time remains, scaffold the TypeScript quickstart server.", links: [{ label: "MCP docs", url: "https://modelcontextprotocol.io/" }] },
-    { day: 4, title: "Begin 2-D dynamic programming", category: "InterviewPrep", estMinutes: 90, description: "Grid and two-sequence DP tables. Finishes next week.", links: [grokking] },
+    { day: 4, title: "Begin 2-D dynamic programming", category: "InterviewPrep", estMinutes: 90, description: "Watch the grid-DP walkthrough, then build the Unique Paths table by hand on paper. Grid and two-sequence tables; finishes next week.", links: [dp2dVisual] },
     { day: 4, title: "Agent workflows", category: "AIEngineering", estMinutes: 120, description: "Read the agents half of Building Effective Agents, then extend your week 4 tool loop into a bounded agent: iteration limit, a permission gate before writes, recovery when a tool call fails.", links: [effectiveAgents] },
     { day: 5, title: "Python for AI engineering", category: "Engineering", estMinutes: 120, description: "Skim Learn X in Y once (20 minutes), then port one of your TypeScript scripts to Python, leaning on the official tutorial when syntax surprises you. Not a giant Python course.", links: [{ label: "Learn X in Y minutes: Python", url: "https://learnxinyminutes.com/docs/python/" }, { label: "Official Python tutorial", url: "https://docs.python.org/3/tutorial/" }] },
     { day: 6, title: "Reliability", category: "Engineering", estMinutes: 90, description: "Read the AWS retries article closely, then add timeouts, retries with jitter, and an idempotency key to one of your API routes. Skim an SRE book chapter for the vocabulary.", links: [awsRetries, { label: "Google SRE book", url: "https://sre.google/sre-book/table-of-contents/" }] },
     { day: 6, title: "Queues, workers, and storage", category: "SystemDesign", estMinutes: 90, description: "Read the key-technologies chapter's queue and storage sections plus the AWS explainer. Write from memory when you would pick a queue vs a cron job vs doing the work synchronously.", links: [{ label: "Hello Interview: Key technologies", url: "https://www.hellointerview.com/learn/system-design/in-a-hurry/key-technologies" }, awsQueues] },
   ],
   7: [
-    { day: 1, title: "Complete 2-D dynamic programming", category: "InterviewPrep", estMinutes: 120, description: "All 22 patterns have now been introduced. Do not sacrifice interview-quality practice to finish all 88 problems.", links: [grokking, neetcode] },
+    { day: 1, title: "Complete 2-D dynamic programming", category: "InterviewPrep", estMinutes: 120, description: "All 22 patterns have now been introduced. Do not sacrifice interview-quality practice to finish all 88 problems.", links: [dp2dVisual, neetcode] },
     { day: 1, title: "Mixed timed interview practice", category: "InterviewPrep", estMinutes: 120, description: "Timed mediums, unseen problems, no pattern labels. Follow UMPIRE aloud." },
     { day: 3, title: "Mixed timed interview practice", category: "InterviewPrep", estMinutes: 120, description: "Timed mediums, unseen problems, no pattern labels. Follow UMPIRE aloud." },
     { day: 2, title: "Evals", category: "AIEngineering", estMinutes: 120, description: "Build the Life Companion eval dataset: grounding, retrieval accuracy, tool selection, task success, tone, latency, cost.", links: [{ label: "Anthropic: Define success and tests", url: "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests" }, hamelEvals] },

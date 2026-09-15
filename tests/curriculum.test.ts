@@ -54,9 +54,9 @@ describe("canonical curriculum architecture", () => {
     expect(STAR_STORY_PROMPTS.length).toBeGreaterThanOrEqual(10);
   });
 
-  it("Grokking is the pattern teacher and NeetCode the problem bank in resources", () => {
+  it("AlgoMaster is the free pattern hub and NeetCode the problem bank in resources", () => {
     const titles = RESOURCES.map(([title]) => title);
-    expect(titles).toContain("Grokking the Coding Interview");
+    expect(titles).toContain("AlgoMaster DSA patterns");
     expect(titles).toContain("NeetCode");
     expect(titles).toContain("Coding Interview University");
   });
@@ -154,6 +154,39 @@ describe("seed data integrity", () => {
           `week ${week} "${t.title}" has no learning links`
         ).toBeGreaterThan(0);
       }
+    }
+  });
+
+  it("pattern-study tasks carry a free visual lesson, and no link is paywalled", () => {
+    const all = Object.values(WEEK_TASKS).flat();
+    // Grokking (designgurus.io) is paywalled; it must never come back.
+    for (const t of all) {
+      for (const l of t.links ?? []) {
+        expect(l.url, `${t.title} links a paywalled course`).not.toContain(
+          "designgurus.io"
+        );
+      }
+    }
+    for (const [title, url] of RESOURCES) {
+      expect(url, `resource "${title}" is paywalled`).not.toContain(
+        "designgurus.io"
+      );
+    }
+    // Every pattern session teaches from a free visual: at least one link,
+    // the first of which is the pattern's video.
+    const patternTasks = all.filter(
+      (t) =>
+        t.category === "InterviewPrep" &&
+        /(pattern$|dynamic programming$)/i.test(t.title)
+    );
+    expect(patternTasks.length).toBeGreaterThanOrEqual(22);
+    for (const t of patternTasks) {
+      const links = t.links ?? [];
+      expect(links.length, `"${t.title}" has no visual lesson link`).toBeGreaterThan(0);
+      expect(
+        links[0].url,
+        `"${t.title}" first link should be its video/visual`
+      ).toMatch(/youtube\.com/);
     }
   });
 
