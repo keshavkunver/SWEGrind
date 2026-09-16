@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const task = {
   findMany: vi.fn(),
   update: vi.fn(),
+  createMany: vi.fn(),
 };
 
 vi.mock("@/lib/db", () => ({
@@ -47,6 +48,7 @@ describe("refreshTaskContent", () => {
   beforeEach(() => {
     task.findMany.mockReset();
     task.update.mockReset();
+    task.createMany.mockReset();
   });
 
   it("updates a row whose content drifted from WEEK_TASKS (the stale-links regression)", async () => {
@@ -82,13 +84,45 @@ describe("refreshTaskContent", () => {
   });
 
   it("leaves up-to-date rows alone (no writes on a normal load)", async () => {
+    // Full 8-week row set built from the live curriculum: nothing drifted,
+    // nothing missing, so neither update nor insert may fire.
     task.findMany.mockResolvedValue(
-      w1.map((t, i) => rowFor(t, i))
+      Object.entries(WEEK_TASKS).flatMap(([week, tasks]) =>
+        tasks.map((t, i) => ({ ...rowFor(t, i), week: parseInt(week, 10) }))
+      )
     );
 
     await refreshTaskContent("user-1");
 
     expect(task.update).not.toHaveBeenCalled();
+    expect(task.createMany).not.toHaveBeenCalled();
+  });
+
+  it("inserts tasks added to the curriculum after the account was seeded", async () => {
+    // Account has every week-1 row EXCEPT the diagnostic: the refresh must
+    // create it with the curriculum content (this is how newly added tasks
+    // reach existing accounts).
+    task.findMany.mockResolvedValue(
+      w1.filter((t) => t !== diag).map((t, i) => rowFor(t, i))
+    );
+
+    await refreshTaskContent("user-1");
+
+    expect(task.createMany).toHaveBeenCalledTimes(1);
+    const { data, skipDuplicates } = task.createMany.mock.calls[0][0];
+    expect(skipDuplicates).toBe(true);
+    const created = data.filter(
+      (d: { week: number; title: string }) => d.week === 1
+    );
+    expect(created.map((d: { title: string }) => d.title)).toEqual([
+      diag.title,
+    ]);
+    expect(created[0]).toMatchObject({
+      userId: "user-1",
+      day: diag.day,
+      order: diagIndex,
+      links: JSON.stringify(diag.links),
+    });
   });
 
   it("skips rows that are not in the curriculum (learner history is preserved)", async () => {

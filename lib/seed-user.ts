@@ -313,6 +313,29 @@ export async function refreshTaskContent(userId: string) {
       await db.task.update({ where: { id: row.id }, data: want });
     }
   }
+
+  // Tasks added to the curriculum after this account was seeded do not
+  // exist as rows yet; insert them (updates alone can never add them).
+  const have = new Set(rows.map((r) => `${r.week}|${r.day}|${r.title}`));
+  const missing = Object.entries(WEEK_TASKS).flatMap(([week, tasks]) =>
+    tasks
+      .map((t, i) => ({ t, i }))
+      .filter(({ t }) => !have.has(`${week}|${t.day}|${t.title}`))
+      .map(({ t, i }) => ({
+        userId,
+        week: parseInt(week, 10),
+        day: t.day,
+        order: i,
+        title: t.title,
+        category: t.category,
+        estMinutes: t.estMinutes ?? null,
+        description: t.description ?? "",
+        links: JSON.stringify(t.links ?? []),
+      }))
+  );
+  if (missing.length > 0) {
+    await db.task.createMany({ data: missing, skipDuplicates: true });
+  }
 }
 
 export async function ensureSeeded(userId: string) {
