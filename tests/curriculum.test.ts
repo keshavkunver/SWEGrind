@@ -10,6 +10,7 @@ import {
   STAR_STEPS,
   STAR_STORY_PROMPTS,
   UMPIRE_STEPS,
+  FULL_STACK_OPEN_PARTS,
   WEEK_TASKS,
   slugify,
 } from "@/lib/curriculum";
@@ -233,5 +234,89 @@ describe("seed data integrity", () => {
     for (const text of texts) {
       expect(text.includes("—"), `em dash in: ${text}`).toBe(false);
     }
+  });
+});
+
+// Full Stack Open (University of Helsinki) is wired into the Engineering
+// track part by part, never as a course to complete end to end. The set of
+// parts the roadmap links is the spec; parts 6, 7, 8, 10 stay optional.
+describe("Full Stack Open integration", () => {
+  const partByUrl = new Map(
+    Object.entries(FULL_STACK_OPEN_PARTS).map(([part, { url }]) => [url, Number(part)])
+  );
+  const isFso = (url: string) =>
+    url.includes("fullstackopen.com") || url.includes("courses.mooc.fi");
+  const allTasks = Object.values(WEEK_TASKS).flat();
+  const fsoLinks = allTasks.flatMap((t) =>
+    (t.links ?? []).filter((l) => isFso(l.url)).map((l) => ({ task: t, link: l }))
+  );
+
+  it("is in the resource library as a course, not a completion target", () => {
+    const entry = RESOURCES.find(([title]) => title === "Full Stack Open");
+    expect(entry).toBeTruthy();
+    expect(entry![1]).toBe("https://fullstackopen.com/en/");
+    expect(entry![2]).toBe("course");
+    expect(entry![4]).toMatch(/never/i);
+  });
+
+  it("part URLs point where the material actually lives (verified 2026-09-15)", () => {
+    // Parts 0 to 5 are on fullstackopen.com; 9 and 11 to 14 moved to mooc.fi,
+    // and the fullstackopen.com pages for them are only pointers.
+    for (const [part, { url }] of Object.entries(FULL_STACK_OPEN_PARTS)) {
+      const n = Number(part);
+      if (n <= 5) {
+        expect(url).toBe(`https://fullstackopen.com/en/part${n}`);
+      } else {
+        expect(url, `part ${n}`).toMatch(
+          /^https:\/\/courses\.mooc\.fi\/org\/uh-cs\/courses\/full-stack-open-[a-z-]+$/
+        );
+      }
+    }
+    expect(new Set(partByUrl.keys()).size).toBe(Object.keys(FULL_STACK_OPEN_PARTS).length);
+  });
+
+  it("links exactly the core parts, in the roadmap, from Engineering tasks", () => {
+    const linked = new Set<number>();
+    for (const { task, link } of fsoLinks) {
+      const part = partByUrl.get(link.url);
+      expect(part, `${task.title}: FSO link is not a known part URL: ${link.url}`).toBeDefined();
+      expect(task.category, `${task.title} links FSO but is not Engineering`).toBe("Engineering");
+      linked.add(part!);
+    }
+    const expected = Object.keys(FULL_STACK_OPEN_PARTS).map(Number).sort((a, b) => a - b);
+    expect([...linked].sort((a, b) => a - b)).toEqual(expected);
+    expect(expected).toEqual([0, 1, 2, 3, 4, 5, 9, 11, 12, 13, 14]);
+  });
+
+  it("labels every FSO link with its part number and the part's real title", () => {
+    for (const { task, link } of fsoLinks) {
+      const part = partByUrl.get(link.url)!;
+      expect(link.label, task.title).toBe(
+        `Full Stack Open part ${part}: ${FULL_STACK_OPEN_PARTS[part].title}`
+      );
+    }
+  });
+
+  it("every task that links FSO names the chapters to do in its description", () => {
+    // Each part is 10+ hours; the task must scope it by chapter ("3a and
+    // 3b" on fullstackopen.com, "chapters 2 and 3" on mooc.fi) so the
+    // estimate stays honest and the part never becomes the whole session.
+    // A bare "part N" mention is not scoping.
+    for (const { task } of fsoLinks) {
+      expect(task.description ?? "", `${task.title} does not scope the FSO part`).toMatch(
+        /\b\d+[a-e]\b|\bchapters? \d/i
+      );
+    }
+  });
+
+  it("part 0 is taught in week 1 before React begins", () => {
+    const w1 = WEEK_TASKS[1];
+    const part0 = w1.find((t) =>
+      (t.links ?? []).some((l) => l.url === FULL_STACK_OPEN_PARTS[0].url)
+    );
+    const react = w1.find((t) => t.title === "React fundamentals");
+    expect(part0).toBeTruthy();
+    expect(react).toBeTruthy();
+    expect(part0!.day).toBeLessThanOrEqual(react!.day);
   });
 });

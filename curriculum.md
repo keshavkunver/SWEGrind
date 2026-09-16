@@ -3,7 +3,7 @@
 Source of truth for the curriculum DATA is `lib/curriculum.ts` (patterns,
 problems, signals, tasks, resources). This document is the source of truth
 for the curriculum DESIGN: what the numbers mean and the rules any future
-revision must keep. Updated 2026-09-04 from the v2 spec.
+revision must keep. Updated 2026-09-04 from the v2 spec; Full Stack Open mapping added 2026-09-15.
 
 ## Primary goal
 
@@ -78,6 +78,32 @@ arrives. Completion evidence (dates, attempts, notes) is retained.
   (verification, evals, observability, deployment, case study); Google
   Calendar is the preferred first integration. V1 entities: User, Goal,
   Project, Task, Weekly Review. Do not overbuild.
+- Full Stack Open (University of Helsinki) is the exercise-driven spine
+  of Track B, wired part by part into the Engineering tasks that teach the
+  same thing (`FULL_STACK_OPEN_PARTS` in `lib/curriculum.ts`; the test
+  suite pins the set). Each task names the chapters to do so the estimate
+  stays honest; a part is never the whole session and the course is never
+  a completion target. Mapping (added 2026-09-15):
+
+  | Part | Roadmap task |
+  |---|---|
+  | 0 Fundamentals of Web apps | W1 How the web works (new task; chapter 0b) |
+  | 1 Introduction to React | W1 React fundamentals (1a to 1d, one of three paths) |
+  | 2 Communicating with server | W2 React depth (2b to 2d across the week) |
+  | 3 Node and Express | W3 API design and building (3a, 3b; skip the MongoDB chapters) |
+  | 4 Testing Express, users | W3 Authentication (4c, 4d) and W4 Testing (4b) |
+  | 5 Testing React, Router | W4 Testing (5c; 5d Playwright when a flow is worth guarding) |
+  | 9 TypeScript (mooc.fi) | W1 TypeScript fundamentals (chapters 2, 3; 4, 5 later) |
+  | 11 CI/CD (mooc.fi) | W4 CI/CD (chapters 2 to 4) |
+  | 12 Containers (mooc.fi) | W4 Docker (chapters 2, 3) |
+  | 13 Relational databases (mooc.fi) | W3 PostgreSQL setup (chapters 2, 3, for the concepts behind Prisma) |
+  | 14 Next.JS (mooc.fi) | W2 Next.js fundamentals (chapter 2, beside the official course) |
+
+  Parts 9 and 11 to 14 moved to courses.mooc.fi (verified 2026-09-15); the
+  fullstackopen.com pages for them are pointers only, so the links go to
+  mooc.fi, where chapter 1 is always "Getting started".
+  Parts 6 (Redux, React Query), 7 (custom hooks, esbuild), 8 (GraphQL)
+  and 10 (React Native) are optional and unlinked; nothing requires them.
 - AI engineering progression: LLM APIs, prompting, structured outputs,
   streaming, deterministic workflows, tool calling, embeddings/RAG,
   context engineering, memory, MCP, constrained agents, evals,
