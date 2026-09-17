@@ -1,3 +1,12 @@
+## Shared workspace instructions
+
+Before working in this repository, read `../AGENTS.md`.
+Resolve these paths from this file's directory. These references are explicit
+because parent rules may not load when this repo is opened directly. Read each
+file once; do not recurse through instruction references. If this is a standalone
+clone or worktree and a referenced file is absent, report the missing context
+and continue with available instructions and the user's request.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
